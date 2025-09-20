@@ -1,0 +1,26 @@
+<mat-toolbar color="primary">
+  <button mat-icon-button (click)="drawer.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <img class="ml-1 mr-05 clickable" src="assets/images/logo-blanc.png" alt="Logo" height="30" routerLink="">
+  <!--<h5 class="text-uppercase titre clickable" routerLink="">Jeux Olympiques</h5>-->
+  <span class="spacer"></span>
+
+</mat-toolbar>
+<mat-drawer-container>
+  <mat-drawer #drawer position="start" [mode]="drawerMode" [opened]="drawerOpened">
+    <mat-nav-list>
+      <mat-list-item>
+        <button mat-button routerLink="">
+          <mat-icon>dashboard</mat-icon>
+          Accueil
+        </button>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-drawer>
+  <mat-drawer-content class="height-container">
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+
+</mat-drawer-container>
+
