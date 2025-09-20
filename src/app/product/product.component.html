@@ -30,7 +30,7 @@
             <mat-card-actions class="px-3 pb-3">
               <form
                 class="d-flex align-items-center form"
-                #f="ngForm">
+                #f="ngForm" (ngSubmit)="onAddProductToCaddy(product, 'add', f.value.quantity, f)">
                 <label class="me-2 mb-0">Quantité :</label>
                 <input
                   type="number"

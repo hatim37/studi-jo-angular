@@ -5,6 +5,10 @@
   <img class="ml-1 mr-05 clickable" src="assets/images/logo-blanc.png" alt="Logo" height="30" routerLink="">
   <!--<h5 class="text-uppercase titre clickable" routerLink="">Jeux Olympiques</h5>-->
   <span class="spacer"></span>
+  <div routerLink="/panier" [matBadge]="caddiesService.getCurrentCaddy().items.size"
+       [matBadgeHidden]="caddiesService.getCurrentCaddy().items.size === 0" matBadgeOverlap="small" class="clickable me-3">
+    <i class="bi bi-bag"></i>
+  </div>
 
 </mat-toolbar>
 <mat-drawer-container>

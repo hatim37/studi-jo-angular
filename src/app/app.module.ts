@@ -14,14 +14,6 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatDivider, MatListItem, MatNavList} from '@angular/material/list';
 import {MatBadge} from '@angular/material/badge';
 import { HomeComponent } from './home/home.component';
-import {
-  MatCard,
-  MatCardActions,
-  MatCardContent,
-  MatCardHeader,
-  MatCardImage,
-  MatCardTitle
-} from '@angular/material/card';
 import { ConditionsOfUseComponent } from './conditions-of-use/conditions-of-use.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ProductComponent } from './product/product.component';
@@ -29,6 +21,9 @@ import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
+import { CaddyComponent } from './caddy/caddy.component';
+import {MatCardModule} from '@angular/material/card';
+
 
 
 registerLocaleData(localeFr, 'fr-FR');
@@ -41,6 +36,7 @@ registerLocaleData(localeFr, 'fr-FR');
     ConditionsOfUseComponent,
     PrivacyPolicyComponent,
     ProductComponent,
+    CaddyComponent,
   ],
   imports: [
     BrowserModule,
@@ -55,12 +51,7 @@ registerLocaleData(localeFr, 'fr-FR');
     MatListItem,
     MatBadge,
     MatDivider,
-    MatCard,
-    MatCardContent,
-    MatCardTitle,
-    MatCardHeader,
-    MatCardImage,
-    MatCardActions,
+    MatCardModule,
     FormsModule,
     HttpClientModule
 

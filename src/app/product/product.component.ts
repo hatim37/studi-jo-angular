@@ -3,6 +3,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 
 import {NgForm} from '@angular/forms';
 import {ProductsService} from '../services/products.service';
+import {Product} from '../model/product.model';
+import {CaddiesService} from '../services/caddies.service';
 
 @Component({
   selector: 'app-product',
@@ -20,6 +22,7 @@ export class ProductComponent implements OnInit {
 
   constructor(private productService: ProductsService,
               private snackBar: MatSnackBar,
+              private caddyService:CaddiesService
               ) { }
 
   ngOnInit(): void {
@@ -47,6 +50,13 @@ export class ProductComponent implements OnInit {
         this.snackBar.open('impossible de charger les produits', 'close', {duration: 3000, panelClass: 'error-snackbar'});
       }
     })
+  }
+
+  onAddProductToCaddy(p: Product, option:string, quantity:number, form: NgForm){
+    const qty = this.quantityMap[p.id] || 1;
+      this.caddyService.addProductToCaddy(p, option,qty);
+      form.resetForm({ quantity: 1 });
+
   }
 
 
