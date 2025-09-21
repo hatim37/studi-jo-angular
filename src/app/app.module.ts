@@ -17,12 +17,18 @@ import { HomeComponent } from './home/home.component';
 import { ConditionsOfUseComponent } from './conditions-of-use/conditions-of-use.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ProductComponent } from './product/product.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { CaddyComponent } from './caddy/caddy.component';
 import {MatCardModule} from '@angular/material/card';
+import { SignupComponent } from './signup/signup.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatCheckbox} from '@angular/material/checkbox';
+import {MatInput} from '@angular/material/input';
+import { SnackbarComponent } from './snackbar/snackbar.component';
+import {MatDialogActions, MatDialogClose, MatDialogContent} from '@angular/material/dialog';
 
 
 
@@ -37,6 +43,8 @@ registerLocaleData(localeFr, 'fr-FR');
     PrivacyPolicyComponent,
     ProductComponent,
     CaddyComponent,
+    SignupComponent,
+    SnackbarComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,7 +61,14 @@ registerLocaleData(localeFr, 'fr-FR');
     MatDivider,
     MatCardModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatFormFieldModule,
+    MatCheckbox,
+    ReactiveFormsModule,
+    MatInput,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose
 
   ],
   providers: [],
