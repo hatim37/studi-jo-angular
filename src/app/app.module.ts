@@ -30,6 +30,7 @@ import {MatInput} from '@angular/material/input';
 import { SnackbarComponent } from './snackbar/snackbar.component';
 import {MatDialogActions, MatDialogClose, MatDialogContent} from '@angular/material/dialog';
 import { ValidationComponent } from './validation/validation.component';
+import { LoginComponent } from './login/login.component';
 
 
 
@@ -47,6 +48,7 @@ registerLocaleData(localeFr, 'fr-FR');
     SignupComponent,
     SnackbarComponent,
     ValidationComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,

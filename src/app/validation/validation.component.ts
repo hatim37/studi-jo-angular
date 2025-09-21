@@ -30,7 +30,8 @@ export class ValidationComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private authService: AuthService,
-              private snackbarService: SnackbarService) {
+              private snackbarService: SnackbarService,
+              private router: Router,) {
   }
 
 
@@ -59,8 +60,27 @@ export class ValidationComponent implements OnInit {
     this.authService.validation({code: this.loginForm.value.code}).subscribe({
       next: value => {
         this.valueBackend = value;
-        this.snackbarService.openValidationDialog(this.valueBackend.body, this.valueBackend.statusCodeValue, 5000,'/login', 'green');
+        console.log(this.valueBackend);
+
+        //si il s'agit de validé un nouvel appareil, on récupère un token apres que le code soit validé
+        if( this.valueBackend.body == "Votre appareil est validé !"){
+          this.authService.loginValidation(this.uuid).subscribe({
+            next: value => {
+              //on charge les informations depuis le token + archive du token en storage
+              this.authService.loadProfile(value);
+              this.snackbarService.openValidationDialog("Authentification réussie", 200, 1500,'/', 'green');
+            }, error: error => {
+              this.router.navigate(['/login']);
+            }
+          })
+          //sinon on redirige vers login.
+        } else {
+          this.snackbarService.openValidationDialog(this.valueBackend.body, this.valueBackend.statusCodeValue, 5000,'/login', 'green');
+        }
+
       }, error: (err: any) => {
+        console.log(err)
+        //si erreur de validation, on redirige vers login pour avoir un nouveau code
         this.snackbarService.openValidationDialog(err.error, 403, 5000,'/login', 'red');
       }
     });

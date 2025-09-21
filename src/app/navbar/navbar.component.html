@@ -9,7 +9,15 @@
        [matBadgeHidden]="caddiesService.getCurrentCaddy().items.size === 0" matBadgeOverlap="small" class="clickable me-3">
     <i class="bi bi-bag"></i>
   </div>
-  <button mat-raised-button color="basic" class="mr-1 btn-menu-top" routerLink="/signup">Créer un compte</button>
+  <button mat-button  *ngIf="authService.authenticated" [matMenuTriggerFor]="importMenu"><mat-icon iconPositionEnd>arrow_drop_down</mat-icon>
+    {{authService.username}}
+  </button>
+  <mat-menu #importMenu>
+    <button mat-menu-item routerLink="/customer/account">Mon compte</button>
+    <button (click)="logout()" mat-menu-item>Se déconnecter</button>
+  </mat-menu>
+  <button *ngIf="!authService.authenticated" mat-raised-button color="basic" class="mr-1 btn-menu-top" routerLink="/signup">Créer un compte</button>
+  <button *ngIf="!authService.authenticated" mat-raised-button color="basic" class="btn-menu-top" routerLink="/login">Connexion</button>
 
 </mat-toolbar>
 <mat-drawer-container>
