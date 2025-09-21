@@ -5,3 +5,11 @@ export class User {
   email: string| undefined;
   password: string| undefined;
 }
+
+export interface activationCode {
+  code: number;
+}
+
+export interface newCode {
+  id: number;
+}

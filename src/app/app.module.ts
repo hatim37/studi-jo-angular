@@ -29,6 +29,7 @@ import {MatCheckbox} from '@angular/material/checkbox';
 import {MatInput} from '@angular/material/input';
 import { SnackbarComponent } from './snackbar/snackbar.component';
 import {MatDialogActions, MatDialogClose, MatDialogContent} from '@angular/material/dialog';
+import { ValidationComponent } from './validation/validation.component';
 
 
 
@@ -45,6 +46,7 @@ registerLocaleData(localeFr, 'fr-FR');
     CaddyComponent,
     SignupComponent,
     SnackbarComponent,
+    ValidationComponent,
   ],
   imports: [
     BrowserModule,
