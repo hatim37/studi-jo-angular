@@ -4,6 +4,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {Product} from '../model/product.model';
 import {CartService} from '../services/cart.service';
 import {AuthService} from '../services/auth.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-caddy',
@@ -21,7 +22,8 @@ export class CaddyComponent implements OnInit {
   constructor(public caddyService: CaddiesService,
               private cartService: CartService,
               private snackBar: MatSnackBar,
-              public authService: AuthService,) {
+              public authService: AuthService,
+              private router: Router,) {
   }
 
   ngOnInit() {
@@ -101,5 +103,12 @@ export class CaddyComponent implements OnInit {
     })
   }
 
+  placeOrder() {
+    if (this.authService.authenticated){
+      this.router.navigate(['/customers/details-commande']);
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
 
 }

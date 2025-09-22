@@ -32,6 +32,9 @@ import {MatDialogActions, MatDialogClose, MatDialogContent} from '@angular/mater
 import { ValidationComponent } from './validation/validation.component';
 import { LoginComponent } from './login/login.component';
 import {AppHttpInterceptor} from './interceptors/app-http.interceptor';
+import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
+import {AuthGuard} from './guards/auth.guard';
+import {AuthorizationGuard} from './guards/authorization.guard';
 
 
 
@@ -50,6 +53,7 @@ registerLocaleData(localeFr, 'fr-FR');
     SnackbarComponent,
     ValidationComponent,
     LoginComponent,
+    UnauthorizedComponent,
   ],
   imports: [
     BrowserModule,
@@ -76,7 +80,7 @@ registerLocaleData(localeFr, 'fr-FR');
     MatDialogClose
 
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass:AppHttpInterceptor, multi:true}],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass:AppHttpInterceptor, multi:true}, AuthGuard, AuthorizationGuard, { provide: LOCALE_ID, useValue: 'fr-FR' }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
