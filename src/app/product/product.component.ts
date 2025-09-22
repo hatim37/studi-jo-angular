@@ -5,6 +5,8 @@ import {NgForm} from '@angular/forms';
 import {ProductsService} from '../services/products.service';
 import {Product} from '../model/product.model';
 import {CaddiesService} from '../services/caddies.service';
+import {AuthService} from '../services/auth.service';
+import {CartService} from '../services/cart.service';
 
 @Component({
   selector: 'app-product',
@@ -18,12 +20,13 @@ export class ProductComponent implements OnInit {
   products: any;
   submitting = false;
   quantityMap: { [productId: number]: number } = {};
-
+  private value: any;
 
   constructor(private productService: ProductsService,
               private snackBar: MatSnackBar,
-              private caddyService:CaddiesService
-              ) { }
+              private caddyService:CaddiesService,
+              private authService: AuthService,
+              private cartService:CartService) { }
 
   ngOnInit(): void {
     //this.authService.loadUserFromStorage();
@@ -54,10 +57,26 @@ export class ProductComponent implements OnInit {
 
   onAddProductToCaddy(p: Product, option:string, quantity:number, form: NgForm){
     const qty = this.quantityMap[p.id] || 1;
+    if(this.authService.authenticated){
+      this.submitting = true;
+      this.cartService.addToCart(p.id,"add", qty).subscribe({
+        next : data => {
+          this.value = data;
+          this.snackBar.open(this.value.message, 'close', {duration: 3000});
+          this.cartService.getSizeCaddy();
+          this.quantityMap[p.id] = 1;
+          form.resetForm({ quantity: 1 });
+          this.submitting = false;
+        },
+        error: err => {
+          this.snackBar.open('erreur, '+err.error.error, 'close', {duration: 3000, panelClass: 'error-snackbar'});
+          this.submitting = false;
+        }
+      });
+    } else {
       this.caddyService.addProductToCaddy(p, option,qty);
       form.resetForm({ quantity: 1 });
-
+    }
   }
-
 
 }

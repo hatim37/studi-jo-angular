@@ -18,7 +18,7 @@ import { ConditionsOfUseComponent } from './conditions-of-use/conditions-of-use.
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ProductComponent } from './product/product.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import { CaddyComponent } from './caddy/caddy.component';
@@ -31,6 +31,7 @@ import { SnackbarComponent } from './snackbar/snackbar.component';
 import {MatDialogActions, MatDialogClose, MatDialogContent} from '@angular/material/dialog';
 import { ValidationComponent } from './validation/validation.component';
 import { LoginComponent } from './login/login.component';
+import {AppHttpInterceptor} from './interceptors/app-http.interceptor';
 
 
 
@@ -75,7 +76,7 @@ registerLocaleData(localeFr, 'fr-FR');
     MatDialogClose
 
   ],
-  providers: [],
+  providers: [{provide: HTTP_INTERCEPTORS, useClass:AppHttpInterceptor, multi:true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

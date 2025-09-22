@@ -15,16 +15,16 @@
             </div>
           </div>
           <ng-container *ngIf="!loading">
+
             <ng-container *ngIf="entries?.length > 0; else emptyCart">
               <div *ngFor="let item of entries" class=" d-flex g-3 product-container border-bottom py-3 ">
                 <div class="me-2 ">
-                  <img class="product-thumb " alt="product-image"
-                       [src]="item.product.processedImg"/>
+                  <img class="product-thumb " alt="product-image" [src]="authService.authenticated ? item.processedImg : item.product.processedImg"/>
                 </div>
                 <div class="d-flex  product-container-name" style="width: 100%">
                   <div class="ps-2">
                     <div class="fw-semibold">
-                      {{item.product.name }}
+                      {{ authService.authenticated ? item.productName : item.product.name }}
                     </div>
                   </div>
                   <div class="d-flex product-price ">
@@ -37,12 +37,16 @@
                       <div class="col-auto">
                         <div class="d-flex align-items-center ">
                           <button mat-icon-button [disabled]="item.quantity == 1"
-                                  (click)="onAddProductToCaddy(item.product, 'remove')">
+                                  (click)="authService.authenticated
+                                   ? addToCartBackend(item.productId, 'remove', 1)
+                                   : onAddProductToCaddy(item.product, 'remove')">
                             <mat-icon>remove_circle_outline</mat-icon>
                           </button>
                           <span class="mx-2">{{ item.quantity }}</span>
                           <button mat-icon-button
-                                  (click)="onAddProductToCaddy(item.product, 'add')">
+                                  (click)="authService.authenticated
+                                   ? addToCartBackend(item.productId, 'add', 1)
+                                   : onAddProductToCaddy(item.product, 'add')">
                             <mat-icon>add_circle_outline</mat-icon>
                           </button>
                         </div>
@@ -50,7 +54,9 @@
 
                       <div class="col-auto ms-auto">
                         <button mat-icon-button
-                                (click)="removeProductFromCaddy(item.product.id)">
+                                (click)="authService.authenticated
+                                 ? deleteCartItems(item.id)
+                                 : removeProductFromCaddy(item.product.id)">
                           <mat-icon color="warn">delete_forever</mat-icon>
                         </button>
                       </div>
@@ -62,7 +68,8 @@
               <div class="d-flex justify-content-end fw-bold mt-3">
                 Total :
                 <span
-                  class="ms-2">{{ caddyService.getTotal()| currency:'EUR':'symbol':'1.2-2':'fr-FR' }}
+                  class="ms-2">{{(authService.authenticated ? valueBackend?.amount : caddyService.getTotal())
+                  | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}
           </span>
               </div>
 
