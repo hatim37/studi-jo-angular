@@ -52,12 +52,14 @@ export class PaymentComponent implements OnInit {
       next: (data: any) => {
         if(data){
           this.snackBar.open('Commande validée', 'close', {duration: 3000, panelClass: 'success-snackbar'});
-          this.router.navigate(['/customer/commandes']);
+          this.router.navigate(['/customers/commandes']);
           this.closeForm();
           this.cartService.getSizeCaddy();
         } else {
           this.snackBar.open('échec, veuillez rééssayer', 'close', {duration: 3000, panelClass: 'error-snackbar'});
         }
+      }, error: (err: any) => {
+
       }
     })
 

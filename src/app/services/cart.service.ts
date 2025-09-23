@@ -79,4 +79,8 @@ export class CartService {
     return this.http.delete(`${environment.backend_cart}/delete-cart/${cartId}`);
   }
 
+  public getCartByOrderId(orderId:number) {
+    return this.http.get(`${environment.backend_cart}/cart-detail/${orderId}`);
+  }
+
 }

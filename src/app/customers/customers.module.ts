@@ -13,13 +13,22 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {MatInput} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButton} from '@angular/material/button';
+import {NgxMaskDirective} from 'ngx-mask';
+import { MyOrdersComponent } from './composants/my-orders/my-orders.component';
+import {MatProgressBar} from '@angular/material/progress-bar';
+import {MatPaginator} from '@angular/material/paginator';
+import { DetailProductOrderComponent } from './composants/detail-product-order/detail-product-order.component';
+import { QrCodeComponent } from './composants/qr-code/qr-code.component';
 
 
 @NgModule({
   declarations: [
     CustomersComponent,
     PaymentComponent,
-    PlaceOrderComponent
+    PlaceOrderComponent,
+    MyOrdersComponent,
+    DetailProductOrderComponent,
+    QrCodeComponent
   ],
   imports: [
     CommonModule,
@@ -33,6 +42,9 @@ import {MatButton} from '@angular/material/button';
     MatInput,
     MatOption,
     MatButton,
+    NgxMaskDirective,
+    MatPaginator,
+    MatProgressBar,
 
   ]
 })

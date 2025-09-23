@@ -35,6 +35,7 @@ import {AppHttpInterceptor} from './interceptors/app-http.interceptor';
 import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 import {AuthGuard} from './guards/auth.guard';
 import {AuthorizationGuard} from './guards/authorization.guard';
+import {provideNgxMask} from 'ngx-mask';
 
 
 
@@ -80,7 +81,13 @@ registerLocaleData(localeFr, 'fr-FR');
     MatDialogClose
 
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass:AppHttpInterceptor, multi:true}, AuthGuard, AuthorizationGuard, { provide: LOCALE_ID, useValue: 'fr-FR' }],
+  providers: [
+    {provide: HTTP_INTERCEPTORS,
+    useClass:AppHttpInterceptor, multi:true},
+    AuthGuard, AuthorizationGuard,
+    {provide: LOCALE_ID, useValue: 'fr-FR'},
+     provideNgxMask(),
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
