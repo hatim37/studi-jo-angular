@@ -15,7 +15,6 @@ export class DetailProductOrderComponent implements OnInit {
   orderId:any;
   productList: any = [];
   public valueBackend:any;
-  totalAmount:any;
 
   constructor(private activedRoute: ActivatedRoute,
               private cartService: CartService,
@@ -38,8 +37,6 @@ export class DetailProductOrderComponent implements OnInit {
           item.processedImg = 'data:image/jpeg;base64,' + item.returnedImg;
           item.qrCodeImg = 'data:image/png;base64,' + item.qrCode;
           this.productList.push(item);
-          console.log(this.productList);
-
         })
       }
     })

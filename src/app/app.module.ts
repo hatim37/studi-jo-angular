@@ -28,7 +28,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {MatInput} from '@angular/material/input';
 import { SnackbarComponent } from './snackbar/snackbar.component';
-import {MatDialogActions, MatDialogClose, MatDialogContent} from '@angular/material/dialog';
+import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
 import { ValidationComponent } from './validation/validation.component';
 import { LoginComponent } from './login/login.component';
 import {AppHttpInterceptor} from './interceptors/app-http.interceptor';
@@ -36,6 +36,11 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 import {AuthGuard} from './guards/auth.guard';
 import {AuthorizationGuard} from './guards/authorization.guard';
 import {provideNgxMask} from 'ngx-mask';
+import { DeleteDialogComponent } from './dialog/delete-dialog/delete-dialog.component';
+import {ValidationDialogComponent} from './dialog/validation-dialog/validation-dialog.component';
+import {MatPaginatorIntl} from '@angular/material/paginator';
+import {getFrPaginatorIntl} from './shared/custom-paginator-intl';
+
 
 
 
@@ -55,6 +60,8 @@ registerLocaleData(localeFr, 'fr-FR');
     ValidationComponent,
     LoginComponent,
     UnauthorizedComponent,
+    DeleteDialogComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -78,15 +85,17 @@ registerLocaleData(localeFr, 'fr-FR');
     MatInput,
     MatDialogContent,
     MatDialogActions,
-    MatDialogClose
+    MatDialogClose,
+    MatDialogTitle,
+    ValidationDialogComponent
 
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS,
-    useClass:AppHttpInterceptor, multi:true},
+    {provide: HTTP_INTERCEPTORS, useClass:AppHttpInterceptor, multi:true},
     AuthGuard, AuthorizationGuard,
     {provide: LOCALE_ID, useValue: 'fr-FR'},
      provideNgxMask(),
+    { provide: MatPaginatorIntl, useValue: getFrPaginatorIntl() }
   ],
   bootstrap: [AppComponent]
 })

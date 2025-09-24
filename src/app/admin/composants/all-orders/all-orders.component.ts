@@ -1,0 +1,64 @@
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
+import {AuthService} from '../../../services/auth.service';
+import {MatTableDataSource} from '@angular/material/table';
+import {AdminService} from '../../services/admin.service';
+
+type ColumnKey = 'commande' | 'email' | 'amount' | 'date' | 'status' | 'action';
+@Component({
+  selector: 'app-all-orders',
+  standalone: false,
+  templateUrl: './all-orders.component.html',
+  styleUrl: './all-orders.component.css'
+})
+export class AllOrdersComponent implements OnInit{
+
+  myOrders: any[] = [];
+  dataSource = new MatTableDataSource<any>([]);
+  displayedColumns: ColumnKey[] = ['commande','email','amount','date','status','action'];
+
+  // Options de colonnes pour la checklist
+  columnOptions: { key: ColumnKey; label: string; visible: boolean }[] = [
+    { key: 'commande', label: 'Commande', visible: true },
+    { key: 'email',    label: 'E-mail',   visible: true },
+    { key: 'amount',   label: 'Montant',  visible: true },
+    { key: 'date',     label: 'Date',     visible: true },
+    { key: 'status',   label: 'Status',   visible: true },
+    { key: 'action',   label: 'Action',   visible: true }
+  ];
+
+  @ViewChild(MatPaginator, { static: true }) paginator!: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort!: MatSort;
+
+  constructor(public adminService: AdminService, public authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.getAllOrders();
+    this.applyColumnVisibility(); // init affichage colonnes
+  }
+
+  getAllOrders(): void {
+    this.adminService.getAllOrders().subscribe({
+      next: data => {
+        this.myOrders = data || [];
+        this.dataSource = new MatTableDataSource(this.myOrders);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+      }
+    });
+  }
+
+  filterCoupon(event: Event) {
+    const value = (event.target as HTMLInputElement).value ?? '';
+    this.dataSource.filter = value.trim().toLowerCase();
+  }
+
+  applyColumnVisibility() {
+    const selected = this.columnOptions
+      .filter(c => c.visible)
+      .map(c => c.key) as ColumnKey[];
+    // sécurité : au moins 1 colonne
+    this.displayedColumns = selected.length ? selected : ['commande'];
+  }
+}
