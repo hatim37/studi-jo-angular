@@ -59,6 +59,7 @@ export class AuthService {
     this.username = decodeJwt.username;
     this.userId = decodeJwt.id;
     this.roles = decodeJwt.scope;
+    console.log(this.roles);
     this.name = decodeJwt.name;
     this.exp = decodeJwt.exp;
     window.localStorage.setItem('access-token', this.jwtToken);

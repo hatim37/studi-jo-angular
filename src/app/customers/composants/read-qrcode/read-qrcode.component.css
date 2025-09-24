@@ -1,0 +1,7 @@
+.green {
+  background-color: #048f04;
+}
+
+mat-card{
+  min-height: 80vh;
+}
