@@ -41,6 +41,40 @@
         </mat-card>
       </div>
 
+      <div class="justify-content-center d-flex flex-column flex-lg-row mt-4 col-12">
+        <mat-card class="analytics-card ca col-12 col-sm-10 col-lg-5" *ngFor="let p of value.productStats">
+          <mat-card-header>
+            <div mat-card-avatar class="metric-avatar">
+              <mat-icon>euro_symbol</mat-icon>
+            </div>
+            <mat-card-title>Offres {{ p.productName }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="metric-value">{{ p.totalAmount | number:'1.2-2' }} €</div>
+
+            <div class="metric-subtext">Ce mois-ci</div>
+          </mat-card-content>
+          <mat-card-content class="previous-month">
+            <div class="metric-value">{{ value.previousMonthEarnings | number:'0.2' }} €</div>
+            <div class="metric-subtext">Mois précédent</div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+      <mat-card class="analytics-card col-12 col-md-5 col-lg-3 mr-3 mb-3" *ngFor="let p of value.productStats">
+        <mat-card-header>
+          <mat-card-title>{{ p.productName }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div><strong>Total quantité :</strong> {{ p.totalQuantity }}</div>
+          <div><strong>Total € :</strong> {{ p.totalAmount | number:'1.2-2' }} €</div>
+          <div class="mt-2"><strong>Mois courant :</strong></div>
+          <div>Quantité : {{ p.currentMonthQuantity }}</div>
+          <div>Total € : {{ p.currentMonthTotal | number:'1.2-2' }} €</div>
+          <div class="mt-2"><strong>Mois précédent :</strong></div>
+          <div>Quantité : {{ p.previousMonthQuantity }}</div>
+          <div>Total € : {{ p.previousMonthTotal | number:'1.2-2' }} €</div>
+        </mat-card-content>
+      </mat-card>
     </mat-card-content>
   </mat-card>
 
