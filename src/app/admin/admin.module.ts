@@ -30,7 +30,6 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from '@angular/material/menu';
 import {MatOption, MatSelect} from '@angular/material/select';
 import { AllOrdersComponent } from './composants/all-orders/all-orders.component';
 import { AnalyticsComponent } from './composants/analytics/analytics.component';
-import { OrderTotalComponent } from './composants/analytics/order-total/order-total.component';
 
 
 @NgModule({
@@ -42,7 +41,6 @@ import { OrderTotalComponent } from './composants/analytics/order-total/order-to
     AccountComponent,
     AllOrdersComponent,
     AnalyticsComponent,
-    OrderTotalComponent,
   ],
   imports: [
     CommonModule,
