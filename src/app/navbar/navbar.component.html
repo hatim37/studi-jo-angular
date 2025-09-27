@@ -2,7 +2,7 @@
   <button mat-icon-button (click)="drawer.toggle()">
     <mat-icon>menu</mat-icon>
   </button>
-  <img class="ml-1 mr-05 clickable" src="assets/images/logo-blanc.png" alt="Logo" height="30" routerLink="">
+  <!--<img class="ml-1 mr-05 clickable" src="assets/images/logo-blanc.png" alt="Logo" height="30" routerLink="">-->
   <!--<h5 class="text-uppercase titre clickable" routerLink="">Jeux Olympiques</h5>-->
   <span class="spacer"></span>
   <div *ngIf="authService.authenticated" routerLink="/panier" [matBadge]="cartService.sizeCaddyBackend || 0"
