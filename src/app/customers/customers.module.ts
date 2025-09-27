@@ -21,6 +21,7 @@ import { DetailProductOrderComponent } from './composants/detail-product-order/d
 import { QrCodeComponent } from './composants/qr-code/qr-code.component';
 import { ReadQrcodeComponent } from './composants/read-qrcode/read-qrcode.component';
 import {MatIcon} from '@angular/material/icon';
+import { AccountComponent } from './composants/account/account.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import {MatIcon} from '@angular/material/icon';
     MyOrdersComponent,
     DetailProductOrderComponent,
     QrCodeComponent,
-    ReadQrcodeComponent
+    ReadQrcodeComponent,
+    AccountComponent
   ],
   imports: [
     CommonModule,

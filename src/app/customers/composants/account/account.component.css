@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   margin: 3rem 0 3rem 0;
-
+  max-height: 90vh;
 }
 
 mat-card {
@@ -27,7 +27,7 @@ form{
   align-items: center;
 }
 
-mat-form-field {
+mat-form-field, mat-card-actions{
   width: 100%;
   margin-bottom: 20px;
 }
@@ -66,27 +66,8 @@ button {
 .invalid {
   color: red;
 }
-
 .PasswordRequired {
   display: flex;
   flex-direction: column;
-  min-width: 300px;
-  @media screen and (max-width: 576px){
-    font-size: 0.7rem;
-  }
+
 }
-
-.repeatPassword {
-  margin-top: 3rem;
-}
-
-
-.custom-snackbar-panel .mat-dialog-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  box-shadow: none;
-}
-
-

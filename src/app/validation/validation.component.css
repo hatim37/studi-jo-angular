@@ -78,8 +78,16 @@ button {
 .invalid {
   color: red;
 }
+
 .PasswordRequired {
   display: flex;
   flex-direction: column;
+  min-width: 300px;
+  @media screen and (max-width: 576px){
+    font-size: 0.7rem;
+  }
+}
 
+.repeatPassword {
+  margin-top: 3rem;
 }

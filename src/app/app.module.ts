@@ -61,7 +61,6 @@ registerLocaleData(localeFr, 'fr-FR');
     LoginComponent,
     UnauthorizedComponent,
     DeleteDialogComponent,
-
   ],
   imports: [
     BrowserModule,

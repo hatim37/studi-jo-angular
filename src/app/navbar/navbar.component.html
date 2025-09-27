@@ -18,7 +18,7 @@
     {{authService.username}}
   </button>
   <mat-menu #importMenu>
-    <button mat-menu-item routerLink="/customer/account">Mon compte</button>
+    <button mat-menu-item routerLink="/customers/account">Mon compte</button>
     <button (click)="logout()" mat-menu-item>Se déconnecter</button>
   </mat-menu>
   <button *ngIf="!authService.authenticated" mat-raised-button color="basic" class="mr-1 btn-menu-top" routerLink="/signup">Créer un compte</button>

@@ -65,7 +65,6 @@ export class LoginComponent implements OnInit {
           this.snackbarService.openValidationDialog("Authentification réussie", 200, 1500, '/', 'green');
         }
       }, error: (err: any) => {
-        console.log(err);
         this.messageError = err.error.error;
         this.optionError = err.error.option;
         if(this.messageError == "Compte non activé" || this.messageError == "Nouvel appareil détecté"){
@@ -77,4 +76,30 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  newPassword() {
+    let email = this.passwordForm.value.email;
+    this.authService.editPassword({email: email}).subscribe({
+      next: value => {
+        this.valueBackend = value;
+        if (this.valueBackend.body.message == "validation") {
+          this.router.navigate(['/validation'], {
+            state: {email: email, optionId: this.valueBackend.body.id, message: "Modifier votre mot de passe"}
+          });
+        }
+      }, error: (err: any) => {
+        console.log(err)
+        this.messageError = err.error.error;
+        this.snackbarService.openValidationDialog(this.messageError, 403, 5000, '/login', 'red');
+      }
+    });
+  }
+
+  formPassword() {
+    this.mode = 1;
+  }
+
+  formConnect() {
+    this.mode = 0;
+  }
 }
+

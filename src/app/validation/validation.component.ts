@@ -5,6 +5,7 @@ import {AuthService} from '../services/auth.service';
 import {Router} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {SnackbarService} from '../services/snackbar.service';
+import {CartService} from '../services/cart.service';
 import {CaddiesService} from '../services/caddies.service';
 
 
@@ -29,9 +30,13 @@ export class ValidationComponent implements OnInit {
   uuid: any;
 
   constructor(private fb: FormBuilder,
+              private snackBar: MatSnackBar,
               private authService: AuthService,
+              private router: Router,
+              public dialog: MatDialog,
               private snackbarService: SnackbarService,
-              private router: Router,) {
+              private cartService: CartService,
+              private caddyService: CaddiesService) {
   }
 
 
@@ -59,28 +64,28 @@ export class ValidationComponent implements OnInit {
     //on valide le code
     this.authService.validation({code: this.loginForm.value.code}).subscribe({
       next: value => {
-        this.valueBackend = value;
-        console.log(this.valueBackend);
 
-        //si il s'agit de validé un nouvel appareil, on récupère un token apres que le code soit validé
-        if( this.valueBackend.body == "Votre appareil est validé !"){
-          this.authService.loginValidation(this.uuid).subscribe({
-            next: value => {
-              //on charge les informations depuis le token + archive du token en storage
-              this.authService.loadProfile(value);
+        //appel login
+        this.authService.loginValidation(this.uuid).subscribe({
+          next: value => {
+            //on charge les informations depuis le token + archive du token en storage
+            this.authService.loadProfile(value);
+            this.cartService.getSizeCaddy();
+            //recherche si panier pour envoi backend :
+            if (this.caddyService.getCurrentCaddy().items.size > 0){
+              this.cartService.sendCaddyInBackend();
+              this.cartService.getSizeCaddy();
               this.snackbarService.openValidationDialog("Authentification réussie", 200, 1500,'/', 'green');
-            }, error: error => {
-              this.router.navigate(['/login']);
+            }else{
+              this.snackbarService.openValidationDialog("Authentification réussie", 200, 1500,'/', 'green');
             }
-          })
-          //sinon on redirige vers login.
-        } else {
-          this.snackbarService.openValidationDialog(this.valueBackend.body, this.valueBackend.statusCodeValue, 5000,'/login', 'green');
-        }
+
+          }, error: error => {
+            this.router.navigate(['/login']);
+          }
+        })
 
       }, error: (err: any) => {
-        console.log(err)
-        //si erreur de validation, on redirige vers login pour avoir un nouveau code
         this.snackbarService.openValidationDialog(err.error, 403, 5000,'/login', 'red');
       }
     });
@@ -105,4 +110,39 @@ export class ValidationComponent implements OnInit {
     });
   }
 
+  newPassword() {
+    let code = this.passwordForm.value.code;
+    let password = this.passwordForm.value.password;
+    let confirmPassword = this.passwordForm.value.confirmPassword;
+    //on vérifie que le password correspond bien au confirmPassword
+    if (password !== confirmPassword) {
+      this.snackBar.open('les mots de passe ne sont pas identiques', 'Fermer', {duration: 3000, panelClass: 'error-snackbar'});
+      return
+    }
+    this.authService.validation({code:code, password:password}).subscribe({
+      next: value => {
+        this.valueBackend=value;
+        if (this.authService.authenticated){
+          this.snackbarService.openValidationDialog(this.valueBackend.body, this.valueBackend.statusCodeValue, 3000,'/customer/account', 'green');
+        }else{
+          this.snackbarService.openValidationDialog(this.valueBackend.body, this.valueBackend.statusCodeValue, 3000,'/login', 'green');
+        }
+      }, error: (err: any) => {
+        this.snackbarService.openValidationDialog(err.error, err.status, 5000,'/', 'red');
+      }
+    });
+  }
+
+  //affiche condition d'un password
+  validatePassword() {
+    const pwd = this.passwordForm.get('password')?.value || '';
+    this.isLengthValid = pwd.length >= 7;
+    this.hasUpperCase = /[A-Z]/.test(pwd);
+    this.hasNumber = /\d/.test(pwd);
+  }
+
+  //afficher le password saisi
+  togglePasswordVisibility() {
+    this.hidePassword = !this.hidePassword;
+  }
 }

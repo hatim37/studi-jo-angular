@@ -7,6 +7,7 @@ import {DetailProductOrderComponent} from './composants/detail-product-order/det
 import {ReadQrcodeComponent} from './composants/read-qrcode/read-qrcode.component';
 import {AuthGuard} from '../guards/auth.guard';
 import {AuthorizationGuard} from '../guards/authorization.guard';
+import {AccountComponent} from './composants/account/account.component';
 
 const routes: Routes = [
   { path: '', component: CustomersComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
   {path: 'commandes', component: MyOrdersComponent},
   {path: 'product_list_order/:orderId', component: DetailProductOrderComponent},
   {path: 'decode', canActivate:[AuthGuard, AuthorizationGuard], data: {roles: ['ADMIN','AGENT']},component: ReadQrcodeComponent},
+  { path: 'account', component: AccountComponent },
 ];
 
 @NgModule({

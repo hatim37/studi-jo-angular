@@ -27,7 +27,7 @@ export class AuthService {
     return this.http.post(`${environment.backend_user}/registration`, user, this.options);
   }
 
-  validation(activationCode: activationCode) {
+  validation(activationCode: any) {
     return this.http.post(`${environment.backend_validation}/activation-send`, activationCode, this.options);
   }
 
@@ -108,6 +108,10 @@ export class AuthService {
     // Stockage unique sous la clé 'deviceId'
     localStorage.setItem('deviceId', JSON.stringify(users));
     return deviceId;
+  }
+
+  editPassword(email: any) {
+    return this.http.post(`${environment.backend_user}/edit-password`, email, this.options);
   }
 
 }
