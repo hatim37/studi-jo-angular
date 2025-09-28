@@ -14,6 +14,27 @@ jobs:
       - name: Récupérer le code
         uses: actions/checkout@v4
 
+      - name: Installer Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Set environment variables for Angular
+        run: |
+          echo "NG_APP_BACKEND_PRODUCTS=${{ secrets.BACKEND_PRODUCTS }}" >> $GITHUB_ENV
+          echo "NG_APP_BACKEND_USER=${{ secrets.BACKEND_USER }}" >> $GITHUB_ENV
+          echo "NG_APP_BACKEND_VALIDATION=${{ secrets.BACKEND_VALIDATION }}" >> $GITHUB_ENV
+          echo "NG_APP_BACKEND_LOGIN=${{ secrets.BACKEND_LOGIN }}" >> $GITHUB_ENV
+          echo "NG_APP_BACKEND_CART=${{ secrets.BACKEND_CART }}" >> $GITHUB_ENV
+          echo "NG_APP_BACKEND_ORDERS=${{ secrets.BACKEND_ORDERS }}" >> $GITHUB_ENV
+          echo "NG_APP_PREPARATION_PROD=production" >> $GITHUB_ENV
+
+      - name: Installer dépendances
+        run: npm install
+
+      - name: Build Angular
+        run: npm run build --configuration production
+
       - name: Installer gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
@@ -24,7 +45,7 @@ jobs:
       - name: Auth Docker pour gcr.io
         run: gcloud auth configure-docker gcr.io
 
-      - name: Build & Push image
+      - name: Build & Push Docker image
         run: |
           docker build -t $IMAGE_REPO:$IMAGE_TAG .
           docker push $IMAGE_REPO:$IMAGE_TAG
