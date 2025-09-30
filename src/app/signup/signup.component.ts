@@ -62,7 +62,7 @@ export class SignupComponent implements OnInit {
     this.authService.register(user).subscribe({
       next: value => {
         this.valueBackend=value;
-        console.log(this.valueBackend);
+
         this.snackbarService.openValidationDialog("Votre compte est créer !", 201, 2000,'/', 'green');
         if(this.valueBackend.body.message == "validation"){
           this.router.navigate(['/validation'], {

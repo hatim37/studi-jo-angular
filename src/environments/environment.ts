@@ -12,7 +12,7 @@ export const environment = {
   backend_products: 'https://studi-jo-products-285073083479.europe-west1.run.app/api',
   backend_user: 'https://studi-jo-users-285073083479.europe-west1.run.app/api',
   backend_validation: 'https://studi-jo-validation-285073083479.europe-west1.run.app/api',
-  backend_login: 'http://localhost:8091/api',
+  backend_login: 'https://studi-jo-security-285073083479.europe-west1.run.app/api',
   backend_cart: 'http://localhost:8094/api',
   backend_orders: 'http://localhost:8095/api',
 };
