@@ -36,10 +36,6 @@
               {{ element.trackingId | uppercase | slice:0:8 }}
             </td>
           </ng-container>
-          <ng-container matColumnDef="email">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>E-mail</th>
-            <td mat-cell *matCellDef="let element">{{ element.userEmail }}</td>
-          </ng-container>
 
           <ng-container matColumnDef="amount">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Montant</th>

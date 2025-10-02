@@ -32,7 +32,6 @@ export class CartService {
     );
     this.sendCaddy(this.authService.userId, this.caddy).subscribe({
       next: data => {
-        console.log(data)
       }
     });
     this.caddy = [];

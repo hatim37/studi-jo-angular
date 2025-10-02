@@ -36,12 +36,25 @@ button {
   width: 100%;
 }
 
+.text-resp {
+  font-size: 14px;
+}
+.text-mail {
+  font-size: 14px;
+}
+
 @media screen and (max-width: 500px) {
   mat-card-title {
     font-size: 20px;
   }
   mat-form-field {
     margin-bottom: 10px;
+  }
+  .text-resp {
+    font-size: 11px;
+  }
+  .text-mail {
+    font-size: 10px;
   }
 }
 

@@ -5,7 +5,7 @@ import {AuthService} from '../../../services/auth.service';
 import {MatTableDataSource} from '@angular/material/table';
 import {AdminService} from '../../services/admin.service';
 
-type ColumnKey = 'commande' | 'email' | 'amount' | 'date' | 'status' | 'action';
+type ColumnKey = 'commande' | 'amount' | 'date' | 'status' | 'action';
 @Component({
   selector: 'app-all-orders',
   standalone: false,
@@ -16,12 +16,11 @@ export class AllOrdersComponent implements OnInit{
 
   myOrders: any[] = [];
   dataSource = new MatTableDataSource<any>([]);
-  displayedColumns: ColumnKey[] = ['commande','email','amount','date','status','action'];
+  displayedColumns: ColumnKey[] = ['commande','amount','date','status','action'];
 
   // Options de colonnes pour la checklist
   columnOptions: { key: ColumnKey; label: string; visible: boolean }[] = [
     { key: 'commande', label: 'Commande', visible: true },
-    { key: 'email',    label: 'E-mail',   visible: true },
     { key: 'amount',   label: 'Montant',  visible: true },
     { key: 'date',     label: 'Date',     visible: true },
     { key: 'status',   label: 'Status',   visible: true },
