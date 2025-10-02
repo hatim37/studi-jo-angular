@@ -48,7 +48,6 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf.template
 # Exposer le port
 EXPOSE 8080
 
-# CMD pour $PORT dans nginx.conf
-CMD ["sh", "-c", "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+
 
 
