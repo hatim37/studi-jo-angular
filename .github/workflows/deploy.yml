@@ -75,7 +75,6 @@ env:
   SERVICE_NAME: frontend-angular
   REGION: europe-west1
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  BUILD_MODE: cloud   # 👈 Ici on force le mode cloud directement
 
 jobs:
   build-and-deploy:
@@ -98,7 +97,6 @@ jobs:
       - name: 🐳 Build Docker image
         run: |
           docker build \
-            --build-arg BUILD_MODE=${{ env.BUILD_MODE }} \
             -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} .
 
       - name: 📤 Push Docker image to GCR
@@ -112,5 +110,5 @@ jobs:
             --image gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
             --region ${{ env.REGION }} \
             --platform managed \
-            --allow-unauthenticated \
-            --set-env-vars BUILD_MODE=${{ env.BUILD_MODE }}
+            --allow-unauthenticated
+

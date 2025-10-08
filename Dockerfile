@@ -25,7 +25,7 @@
 #EXPOSE 8080
 #CMD ["nginx", "-g", "daemon off;"]
 
-# Étape 1 : Build Angular
+# Étape 1 : build Angular
 FROM node:20-alpine AS build
 
 WORKDIR /app
@@ -37,18 +37,8 @@ RUN npm install
 # Copier le reste du projet
 COPY . .
 
-# Définir la variable BUILD_MODE avec une valeur par défaut
-ARG BUILD_MODE=local
-ENV BUILD_MODE=${BUILD_MODE}
-
-# Exécuter la commande de build selon le mode
-RUN if [ "$BUILD_MODE" = "cloud" ]; then \
-      echo "📦 Build mode CLOUD"; \
-      npm run build:cloud; \
-    else \
-      echo "🏡 Build mode LOCAL"; \
-      npm run build; \
-    fi
+# Build Angular en mode cloud
+RUN npm run build:cloud
 
 # Étape 2 : Serveur web Nginx pour servir les fichiers statiques
 FROM nginx:alpine
@@ -57,7 +47,7 @@ FROM nginx:alpine
 COPY --from=build /app/dist/frontend-angular /usr/share/nginx/html
 
 # Exposer le port 80
-EXPOSE 80
+EXPOSE 8080
 
 # Démarrer Nginx
 CMD ["nginx", "-g", "daemon off;"]
