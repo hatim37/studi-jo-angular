@@ -76,33 +76,26 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
 
+    env:
+      IMAGE_NAME: angular-frontend
+      SERVICE_NAME: angular-frontend
+      REGION: europe-west1
+
     steps:
-      # 1️⃣ Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Installer Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      # 3️⃣ Installer dépendances
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      # 4️⃣ Build Angular avec les variables d'environnement GitHub
-      - name: Build Angular with injected env vars
-        env:
-          NG_APP_BACKEND_PRODUCTS: ${{ secrets.BACKEND_PRODUCTS }}
-          NG_APP_BACKEND_USER: ${{ secrets.BACKEND_USER }}
-          NG_APP_BACKEND_VALIDATION: ${{ secrets.BACKEND_VALIDATION }}
-          NG_APP_BACKEND_LOGIN: ${{ secrets.BACKEND_LOGIN }}
-          NG_APP_BACKEND_CART: ${{ secrets.BACKEND_CART }}
-          NG_APP_BACKEND_ORDERS: ${{ secrets.BACKEND_ORDERS }}
-        run: npm run build --configuration production
+      - name: Build Angular
+        run: npm run build --configuration cloud
 
-      # 5️⃣ Setup gcloud
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
@@ -110,39 +103,24 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      # 6️⃣ Auth Docker pour GCR
-      - name: Auth Docker for GCR
+      - name: Auth Docker
         run: gcloud auth configure-docker gcr.io
 
-      # 7️⃣ Build & Push Docker image
       - name: Build & Push Docker image
-        env:
-          IMAGE_NAME: my-angular-frontend
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/$IMAGE_NAME:$GITHUB_SHA .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/$IMAGE_NAME:$GITHUB_SHA
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      # 8️⃣ Deploy to Cloud Run
       - name: Deploy to Cloud Run
-        env:
-          IMAGE_NAME: my-angular-frontend
-          REGION: europe-west1
-          SERVICE_NAME: my-angular-frontend
-          SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
         run: |
-          gcloud run deploy $SERVICE_NAME \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/$IMAGE_NAME:$GITHUB_SHA \
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --platform managed \
-            --region $REGION \
+            --region ${{ env.REGION }} \
             --allow-unauthenticated \
-            --service-account $SERVICE_ACCOUNT \
-            --port 8080 \
+            --service-account ${{ secrets.SERVICE_ACCOUNT }} \
+            --port 80 \
             --timeout 300
 
-      # 9️⃣ Show Cloud Run URL
       - name: Show Cloud Run URL
-        env:
-          REGION: europe-west1
-          SERVICE_NAME: my-angular-frontend
-        run: gcloud run services describe $SERVICE_NAME --region $REGION --format='value(status.url)'
-
+        run: gcloud run services describe ${{ env.SERVICE_NAME }} --region ${{ env.REGION }} --format='value(status.url)'
