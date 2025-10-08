@@ -53,13 +53,11 @@ export class AuthService {
   loadProfile(value: any) {
     this.authenticated = true;
     this.jwtToken = value['bearer'];
-    console.log(this.jwtToken);
     let decodeJwt:any = jwtDecode(this.jwtToken);
     this.email = decodeJwt.sub;
     this.username = decodeJwt.username;
     this.userId = decodeJwt.id;
     this.roles = decodeJwt.scope;
-    console.log(this.roles);
     this.name = decodeJwt.name;
     this.exp = decodeJwt.exp;
     window.localStorage.setItem('access-token', this.jwtToken);

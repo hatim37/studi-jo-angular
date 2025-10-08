@@ -58,8 +58,6 @@ export class CartService {
     return this.http.get(`${environment.backend_cart}/cart/${userId}`);
   }
 
-
-
   getSizeCaddy() {
     let value:any;
     this.getCartByUserId().subscribe({

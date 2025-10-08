@@ -43,3 +43,9 @@ mat-card { border-radius: 8px; }
     align-items: center;
   }
 }
+
+.spinner-border-qty {
+  font-size: 10px;
+  height: 1rem;
+  width: 1rem
+}

@@ -5,6 +5,7 @@ import {Router} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {AuthService} from '../../../services/auth.service';
 import {CustomerService} from '../../services/customer.service';
+import {SnackbarService} from '../../../services/snackbar.service';
 
 @Component({
   selector: 'app-read-qrcode',
@@ -19,23 +20,39 @@ export class ReadQrcodeComponent implements OnInit {
   imagePreview: string | ArrayBuffer | null | undefined;
   valueFromQrCode: any;
   codeDecrypty: any;
+  messageError:any;
+  messageErrorFormat: string | undefined;
 
   constructor(private fb: FormBuilder,
               private snackBar: MatSnackBar,
               private customerService:CustomerService,
-              private authService: AuthService) {
+              private snackbarService: SnackbarService,) {
   }
 
   ngOnInit(): void {
     this.readCodeForm = this.fb.group({
       fileName: ['', Validators.required],
     });
-
   }
 
-
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+    this.codeDecrypty = undefined;
+    this.messageError = undefined;
+    this.valueFromQrCode = undefined;
+
+    const file: File = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/pjpeg'];
+    if (!allowedTypes.includes(file.type)) {
+      this.messageErrorFormat = 'Format de fichier non supporté. Veuillez sélectionner un PNG ou JPEG.';
+      this.readCodeForm.patchValue({ fileName: '' });
+      this.selectedFile = undefined;
+      this.imagePreview = undefined;
+      return;
+    }
+
+    this.selectedFile = file;
     this.previewImage();
   }
 
@@ -53,14 +70,19 @@ export class ReadQrcodeComponent implements OnInit {
     if (this.readCodeForm.valid) {
       let formData = new FormData();
       formData.append('img', this.selectedFile);
-
       this.customerService.readQrCode(formData).subscribe({
         next: data => {
           if (data) {
             this.valueFromQrCode = data;
           }
         }, error: (err: any) => {
-          this.snackBar.open(' échec, réessayer'+err, 'close', {duration: 3000, panelClass: 'error-snackbar'});
+          if (err.error.error === "Le fichier fourni n'est pas valide" ||
+            err.error.error ==="Le fichier QR code est vide ou null" ||
+            err.error.error ==="Le fichier ne contient pas de QR code"){
+            this.snackbarService.openValidationDialog(err.error.error, 403, 5000, '/', 'red');
+          }else {
+          this.snackbarService.openValidationDialog("Échec, veuillez réessayer", 403, 5000, '/', 'red');
+          }
         }
       })
     } else {
@@ -73,14 +95,15 @@ export class ReadQrcodeComponent implements OnInit {
 
   testCode() {
     let decryptDto = new DecryptDto();
-    decryptDto.userId = this.authService.userId;
+    decryptDto.userId = this.valueFromQrCode.client;
     decryptDto.orderId = this.valueFromQrCode.commande;
     decryptDto.inputCode = this.valueFromQrCode.code;
     this.customerService.decryptKeyInQrCode(decryptDto).subscribe({
       next:data => {
         this.codeDecrypty = data
       }, error: (err: any) => {
-        this.snackBar.open(' échec, réessayer'+err, 'close', {duration: 3000, panelClass: 'error-snackbar'});
+        this.messageError = "Code de sécurité invalide";
+        //this.snackBar.open(' échec, réessayer', 'close', {duration: 3000, panelClass: 'error-snackbar'});
       }
     })
   }

@@ -19,9 +19,13 @@ type ColKey = 'id'|'name'|'username'|'email'|'active'|'roles'|'action';
 export class AccountComponent implements OnInit{
   mode = 0;
   editUserId: number | null = null;
-
+  loading = false;
+  error?: string;
   allUsers: any[] = [];
   dataSource = new MatTableDataSource<any>([]);
+  valueBackend: any;
+  messageError: any;
+
 
   // Non des colonnes
   displayCols: { key: ColKey; label: string; show: boolean }[] = [
@@ -44,8 +48,7 @@ export class AccountComponent implements OnInit{
     { id: 3, name: 'AGENT' }
   ];
 
-  valueBackend: any;
-  messageError: any;
+
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -76,15 +79,19 @@ export class AccountComponent implements OnInit{
   }
 
   getAllUsers(): void {
+    this.loading = true;
     this.adminService.getAllUsers().subscribe({
       next: data => {
+        this.loading = false;
         this.allUsers = data;
         this.dataSource = new MatTableDataSource(this.allUsers);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
       },
       error: err => {
+        this.loading = false;
         this.messageError = err;
+        this.snackBar.open('impossible de charger les utilisateurs', 'close', {duration: 3000, panelClass: 'error-snackbar'});
       }
     });
   }
@@ -118,6 +125,9 @@ export class AccountComponent implements OnInit{
   }
 
   deleteAccount(email: string): void {
+    if (email == "admin@admin.com") {
+      return
+    }
     const dialogRef = this.dialog.open(DeleteDialogComponent,{
       data: { message: `Supprimer le compte ${email} ?` }
     });

@@ -41,11 +41,9 @@
           </mat-card-content>
         </mat-card>
       </div>
-
-      <!------------------------ Statistique par produits -------------------------->
       <mat-card-title class="mt-4">Statistiques par produits :</mat-card-title>
       <mat-divider class="m-2"></mat-divider>
-      <div class="row mt-4">
+      <div class="row mt-4" *ngIf="value.productStats?.length > 0;else emptyCart">
         <div class="col-12 col-lg-6 col-xl-4 mb-4" *ngFor="let p of value.productStats">
 
           <mat-card class="analytics-card h-100 col-12 col-sm-10 col-lg-12 col-xl-11">
@@ -100,6 +98,13 @@
 
         </div>
       </div>
+      <!-- Pas de stat produit -->
+        <ng-template #emptyCart>
+          <div class="d-flex flex-column align-items-center justify-content-center py-5">
+            <mat-icon class="mb-2">remove_shopping_cart</mat-icon>
+            <span>Aucun produit vendu</span>
+          </div>
+        </ng-template>
     </mat-card-content>
   </mat-card>
 </div>

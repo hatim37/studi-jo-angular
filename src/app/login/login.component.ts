@@ -22,7 +22,6 @@ export class LoginComponent implements OnInit {
   valueBackend:any;
   optionError: any;
 
-
   constructor(private fb: FormBuilder,
               private authService: AuthService,
               private router: Router,
@@ -60,7 +59,7 @@ export class LoginComponent implements OnInit {
         if (this.caddyService.getCurrentCaddy().items.size > 0) {
           this.cartService.sendCaddyInBackend();
           setTimeout(() => {this.cartService.getSizeCaddy();}, 500);
-          this.snackbarService.openValidationDialog("Authentification réussie", 200, 1500, '/', 'green');
+          this.snackbarService.openValidationDialog("Authentification réussie", 200, 1500, '/panier', 'green');
         } else {
           this.snackbarService.openValidationDialog("Authentification réussie", 200, 1500, '/', 'green');
         }
@@ -87,7 +86,6 @@ export class LoginComponent implements OnInit {
           });
         }
       }, error: (err: any) => {
-        console.log(err)
         this.messageError = err.error.error;
         this.snackbarService.openValidationDialog(this.messageError, 403, 5000, '/login', 'red');
       }

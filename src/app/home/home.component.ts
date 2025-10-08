@@ -1,4 +1,6 @@
-import {Component, HostListener} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
+import {window} from 'rxjs';
+import {CartService} from '../services/cart.service';
 
 @Component({
   selector: 'app-home',
@@ -6,10 +8,10 @@ import {Component, HostListener} from '@angular/core';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   cols: number = 4;
 
-  constructor() {
+  constructor(public cartService:CartService) {
     this.setCols();
   }
 
@@ -19,6 +21,7 @@ export class HomeComponent {
   }
 
   setCols() {
+    // @ts-ignore
     const w = window.innerWidth;
     if (w < 600) {
       this.cols = 1;
@@ -27,5 +30,8 @@ export class HomeComponent {
     } else {
       this.cols = 4;
     }
+  }
+
+  ngOnInit(): void {
   }
 }

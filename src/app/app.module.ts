@@ -40,6 +40,7 @@ import { DeleteDialogComponent } from './dialog/delete-dialog/delete-dialog.comp
 import {ValidationDialogComponent} from './dialog/validation-dialog/validation-dialog.component';
 import {MatPaginatorIntl} from '@angular/material/paginator';
 import {getFrPaginatorIntl} from './shared/custom-paginator-intl';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 
 
@@ -62,33 +63,34 @@ registerLocaleData(localeFr, 'fr-FR');
     UnauthorizedComponent,
     DeleteDialogComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    RouterModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatSidenavModule,
-    MatNavList,
-    MatListItem,
-    MatBadge,
-    MatDivider,
-    MatCardModule,
-    FormsModule,
-    HttpClientModule,
-    MatFormFieldModule,
-    MatCheckbox,
-    ReactiveFormsModule,
-    MatInput,
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogClose,
-    MatDialogTitle,
-    ValidationDialogComponent
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        RouterModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatIconModule,
+        MatMenuModule,
+        MatSidenavModule,
+        MatNavList,
+        MatListItem,
+        MatBadge,
+        MatDivider,
+        MatCardModule,
+        FormsModule,
+        HttpClientModule,
+        MatFormFieldModule,
+        MatCheckbox,
+        ReactiveFormsModule,
+        MatInput,
+        MatDialogContent,
+        MatDialogActions,
+        MatDialogClose,
+        MatDialogTitle,
+        ValidationDialogComponent,
+        MatProgressSpinner
 
-  ],
+    ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass:AppHttpInterceptor, multi:true},
     AuthGuard, AuthorizationGuard,

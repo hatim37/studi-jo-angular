@@ -17,7 +17,13 @@ export class CaddyComponent implements OnInit {
   public caddy: any;
   public entries: any = [];
   public valueBackend:any;
-  loading: boolean = false;
+  public loading: boolean = false;
+  public submitting = false;
+  public addBouton: boolean = false;
+  public removeBouton: boolean = false;
+  public errorGetCaddy: boolean = false;
+  loadingAdd: { [id: number]: boolean } = {};
+  loadingRemove: { [id: number]: boolean } = {};
 
   constructor(public caddyService: CaddiesService,
               private cartService: CartService,
@@ -32,6 +38,7 @@ export class CaddyComponent implements OnInit {
 
   public getCaddies() {
     if(this.authService.authenticated){
+      this.cartService.getSizeCaddy();
       this.getCartBackend();
     } else {
       this.caddy=this.caddyService.getCurrentCaddy().items;
@@ -54,6 +61,15 @@ export class CaddyComponent implements OnInit {
   }
 
   addToCartBackend(id:number,option:string, quantity:number) {
+    //on active les animations spinner
+    this.loading=true;
+    if (option === 'add') {
+      this.loadingAdd[id] = true;
+    } else {
+      this.loadingRemove[id] = true;
+    }
+    this.submitting = true;
+    //on lance la requete vers le backend
     this.cartService.addToCart(id,option,quantity).subscribe({
       next : data => {
         this.cartService.getCartByUserId().subscribe({
@@ -64,22 +80,46 @@ export class CaddyComponent implements OnInit {
               item.processedImg = 'data:image/jpeg;base64,' + item.returnedImg;
               this.entries.push(item);
             })
+            this.snackBar.open('Quantité modifiée !', 'close', {duration: 3000});
+            //on arrete les animations spinner
+            this.loading = false;
+            this.submitting = false;
+            this.removeBouton = false;
+            this.addBouton = false
+            this.loadingAdd[id] = false;
+            this.loadingRemove[id] = false;
+          },error: (err: any) => {
+            this.snackBar.open('Erreur, veuillez réessayer ', 'close', {duration: 3000, panelClass: 'error-snackbar'});
+            this.loading = false;
+            this.submitting = false;
+            this.removeBouton = false;
+            this.addBouton = false
+            this.loadingAdd[id] = false;
+            this.loadingRemove[id] = false;
           }
         })
-        this.snackBar.open('Produit ajouter', 'close', {duration: 3000});
+
       }
     });
   }
 
   getCartBackend() {
+    this.loading=true;
     this.entries = [];
     this.cartService.getCartByUserId().subscribe({
       next: data => {
+        this.loading=false;
         this.valueBackend = data;
         this.valueBackend.cartItems.forEach((item: { processedImg: string; returnedImg: string; }) => {
           item.processedImg = 'data:image/jpeg;base64,' + item.returnedImg;
           this.entries.push(item);
         })
+      },
+      error: err => {
+        this.loading=false;
+        this.errorGetCaddy = true
+        this.snackBar.open('Erreur, veuillez réessayer', 'close', {duration: 3000, panelClass: 'error-snackbar'});
+
       }
     })
   }

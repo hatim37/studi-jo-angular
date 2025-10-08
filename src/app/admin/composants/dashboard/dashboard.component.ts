@@ -22,6 +22,8 @@ export class DashboardComponent implements OnInit {
   private value: any;
   submitting = false;
   quantityMap: { [productId: number]: number } = {};
+  public errorGetProducts: boolean | undefined;
+  loading: boolean = false;
 
   constructor(private adminService: AdminService,
               private fb: FormBuilder,
@@ -40,10 +42,11 @@ export class DashboardComponent implements OnInit {
   }
 
   getAllProducts() {
+    this.loading = true;
     this.products = [];
     this.adminService.getAllProducts().subscribe({
       next: data => {
-
+        this.loading = false;
         // @ts-ignore
         data.forEach((p: { id: string | number; }) => this.quantityMap[p.id] = 1);
         data.forEach((element: { processedImg: string; byteImg: string; }) => {
@@ -52,9 +55,9 @@ export class DashboardComponent implements OnInit {
         })
       },
       error: err => {
-        this.snackBar.open('impossible de charger les produits', 'close', {
-          duration: 3000,
-          panelClass: 'error-snackbar'
+        this.errorGetProducts = true;
+        this.loading = false;
+        this.snackBar.open('impossible de charger les produits', 'close', {duration: 3000, panelClass: 'error-snackbar'
         });
       }
     })

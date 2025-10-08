@@ -38,7 +38,6 @@ export class AccountComponent implements OnInit {
   getUserById(){
     this.customerService.getUserByEmail(this.authService.email).subscribe({
       next: data => {
-        console.log(data);
         this.UserForm.patchValue(data);
       }
     })
@@ -65,7 +64,6 @@ export class AccountComponent implements OnInit {
     this.authService.editPassword({email:this.UserForm.value.email}).subscribe({
       next: value => {
         this.valueBackend = value;
-        console.log(this.valueBackend);
         if (this.valueBackend.body.message == "validation") {
           this.router.navigate(['/validation'], {
             state: { email: this.UserForm.value.email, optionId : this.valueBackend.body.id, message: "Modifier votre mot de passe" }});

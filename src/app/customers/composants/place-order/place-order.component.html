@@ -1,21 +1,21 @@
-
 <div class="padding-10">
   <mat-card class="height-container">
     <mat-card-header>
       <mat-card-title>Votre commande</mat-card-title>
     </mat-card-header>
     <mat-divider class="mb-4"></mat-divider>
-
     <mat-card-content class="justify-content-center d-flex">
-      <mat-card class="card-container">
+      <div *ngIf="loading" class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Chargement...</span>
+        </div>
+      </div>
+      <mat-card class="card-container" *ngIf="valueBackend && !loading">
         <mat-card-header>
           <mat-card-title>Récap de votre commande</mat-card-title>
         </mat-card-header>
-
         <mat-divider></mat-divider>
-
-        <mat-card-content *ngIf="valueBackend">
-          <!-- Bloc infos client / commande -->
+        <mat-card-content >
           <section class="row g-3 align-items-start my-2">
             <div class="col-12 col-md-6">
               <div class="mt-1 info-label">Nom : {{ authService.name }}</div>
@@ -31,15 +31,11 @@
               </div>
             </div>
           </section>
-
           <mat-divider></mat-divider>
-
           <section class="row gy-3 my-2">
             <div class="col-12" *ngFor="let product of entries">
               <div class="col-12 ordered-product d-flex flex-row flex-sm-row justify-content-start  align-items-center gap-3 p-2 border rounded ">
-
                 <img [src]="product.processedImg" alt="product-image" class="product-thumb">
-
                 <div class="flex-grow-1 w-100">
                   <div class="d-flex   gap-2 product-infos">
                     <div class="flex-grow-1">
@@ -57,20 +53,24 @@
               </div>
             </div>
           </section>
-
-          <!-- Total -->
           <div class="d-flex justify-content-end mt-3">
             <div class="h5 mb-0">Total : {{ valueBackend.amount | number:'0.2' }} €</div>
           </div>
         </mat-card-content>
 
-        <!-- Actions -->
         <div class="d-flex justify-content-end mt-2 mb-2 px-3">
           <button mat-raised-button color="primary" (click)="payOrder(valueBackend.id)">
             Valider et payer
           </button>
         </div>
       </mat-card>
+      <div *ngIf="errorGetCart && !loading">
+        <div class="d-flex flex-column align-items-center justify-content-center py-5">
+          <mat-icon class="mb-2">remove_shopping_cart</mat-icon>
+          <span>Erreur lors du chargement, veuillez réessayer</span>
+        </div>
+      </div>
     </mat-card-content>
+
   </mat-card>
 </div>

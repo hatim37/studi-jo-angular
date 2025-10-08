@@ -12,9 +12,12 @@
             <mat-icon>attach_file</mat-icon>
           </button>
           <input matInput readonly formControlName="fileName">
-          <input type="file" hidden #f_input (change)="onFileSelected($event)">
+          <input type="file" hidden #f_input (change)="onFileSelected($event)" accept=".png,.jpeg,.jpg">
+          <mat-error *ngIf="messageErrorFormat">
+            {{messageErrorFormat}}
+          </mat-error>
         </mat-form-field>
-        <button mat-raised-button color="primary" type="submit" class="ml-1">Valider</button>
+        <button mat-raised-button color="primary" type="submit" class="ml-1" [disabled]="!readCodeForm.valid || !selectedFile">Valider</button>
       </form>
 
       <div *ngIf="valueFromQrCode">
@@ -22,8 +25,11 @@
         <p>Type de billet : {{valueFromQrCode.type}}</p>
         <p>Quantité : {{valueFromQrCode.quantity}}</p>
         <p>Code de sécurité : {{valueFromQrCode.code}}</p>
-        <button mat-raised-button color="primary" (click)="testCode()" class="mb-1">Test sécurité</button>
+        <button mat-raised-button [ngClass]="{'green-button': codeDecrypty && !messageError}" [color]="messageError ? 'warn' : 'primary'" (click)="testCode()" class="mb-1">
+          Test sécurité
+        </button>
         <p class="mt-1" *ngIf="codeDecrypty">Code de sécurité : {{codeDecrypty.outputCode}}</p>
+        <p class="mt-1" *ngIf="messageError">Code de sécurité : {{messageError}}</p>
       </div>
     </mat-card-content>
   </mat-card>

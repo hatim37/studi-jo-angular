@@ -21,6 +21,8 @@ export class ProductComponent implements OnInit {
   submitting = false;
   quantityMap: { [productId: number]: number } = {};
   private value: any;
+  public errorGetProducts: boolean | undefined;
+  loadingProducts: { [productId: string]: boolean } = {};
 
   constructor(private productService: ProductsService,
               private snackBar: MatSnackBar,
@@ -37,12 +39,10 @@ export class ProductComponent implements OnInit {
     this.loading = true;
     this.products = [];
     this.productService.getAllProducts().subscribe({
-
       next: (data: any[]) => {
         this.loading = false;
         // @ts-ignore
         data.forEach((p: { id: string | number; }) => this.quantityMap[p.id] = 1);
-
         data.forEach(
           (element: { processedImg: string; byteImg: string; }) =>{
             element.processedImg = 'data:image/jpeg;base64,' + element.byteImg;
@@ -50,12 +50,15 @@ export class ProductComponent implements OnInit {
           })
       },
       error: (err: { error: { error: string; }; }) => {
+        this.errorGetProducts = true;
+        this.loading = false;
         this.snackBar.open('impossible de charger les produits', 'close', {duration: 3000, panelClass: 'error-snackbar'});
       }
     })
   }
 
   onAddProductToCaddy(p: Product, option:string, quantity:number, form: NgForm){
+    this.loadingProducts[p.id] = true;
     const qty = this.quantityMap[p.id] || 1;
     if(this.authService.authenticated){
       this.submitting = true;
@@ -67,15 +70,18 @@ export class ProductComponent implements OnInit {
           this.quantityMap[p.id] = 1;
           form.resetForm({ quantity: 1 });
           this.submitting = false;
+          this.loadingProducts[p.id] = false;
         },
         error: err => {
           this.snackBar.open('erreur, '+err.error.error, 'close', {duration: 3000, panelClass: 'error-snackbar'});
           this.submitting = false;
+          this.loadingProducts[p.id] = false;
         }
       });
     } else {
       this.caddyService.addProductToCaddy(p, option,qty);
       form.resetForm({ quantity: 1 });
+      this.loadingProducts[p.id] = false;
     }
   }
 

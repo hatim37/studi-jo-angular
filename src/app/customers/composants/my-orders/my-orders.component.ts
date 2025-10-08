@@ -21,12 +21,8 @@ interface Order {
 export class MyOrdersComponent implements OnInit{
   orders: Order[] = [];
   pagedOrders: Order[] = [];
-
-  // UI
-  isLoading = false;
+  loading = false;
   error?: string;
-
-  // Pagination
   pageSize = 6;
   pageIndex = 0;
   pageSizeOptions = [6, 12, 24];
@@ -37,11 +33,11 @@ export class MyOrdersComponent implements OnInit{
   ) {}
 
   ngOnInit(): void {
-    this.loadOrders();
+    this.getOrders();
   }
 
-  private loadOrders(): void {
-    this.isLoading = true;
+  getOrders(): void {
+    this.loading = true;
     this.customerService.getOrdersByUserId().subscribe({
       next: (data: Order[]) => {
         // tri par date décroissante
@@ -50,11 +46,11 @@ export class MyOrdersComponent implements OnInit{
         );
         this.pageIndex = 0;
         this.updatePage();
-        this.isLoading = false;
+        this.loading = false;
       },
       error: (err: any) => {
         this.error = 'Impossible de charger vos commandes.';
-        this.isLoading = false;
+        this.loading = false;
       }
     });
   }

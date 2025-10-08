@@ -21,7 +21,6 @@ export class AnalyticsComponent implements OnInit {
     this.adminService.getAnalytics().subscribe({
       next: data => {
         this.value = data;
-        console.log(data);
       }
     })
   }

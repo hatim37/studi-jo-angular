@@ -17,6 +17,8 @@ export class PlaceOrderComponent implements OnInit {
   public entries: any = [];
   public valueBackend:any;
   public date:Date = new Date();
+  public loading:boolean = false;
+  public errorGetCart: boolean= false;
 
   constructor(protected authService: AuthService,
               private cartService: CartService,
@@ -28,15 +30,22 @@ export class PlaceOrderComponent implements OnInit {
   }
 
   getCartBackend() {
+    this.loading = true;
     this.entries = [];
     this.cartService.getCartByUserId().subscribe({
       next: data => {
+        this.loading = false;
         this.valueBackend = data;
         this.valueBackend.cartItems.forEach((item: { processedImg: string; returnedImg: string; qrCodeImg:string; qrCode:string }) => {
           item.processedImg = 'data:image/jpeg;base64,' + item.returnedImg;
           item.qrCodeImg = 'data:image/png;base64,' + item.qrCode;
           this.entries.push(item);
         })
+      },
+      error: (err) => {
+        this.errorGetCart = true;
+        this.loading = false;
+        this.snackBar.open('impossible de charger vos articles', 'close', {duration: 3000, panelClass: 'error-snackbar'});
       }
     })
   }

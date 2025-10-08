@@ -13,11 +13,11 @@ type ColumnKey = 'commande' | 'amount' | 'date' | 'status' | 'action';
   styleUrl: './all-orders.component.css'
 })
 export class AllOrdersComponent implements OnInit{
-
+  loading = false;
   myOrders: any[] = [];
   dataSource = new MatTableDataSource<any>([]);
   displayedColumns: ColumnKey[] = ['commande','amount','date','status','action'];
-
+  error?: string;
   // Options de colonnes pour la checklist
   columnOptions: { key: ColumnKey; label: string; visible: boolean }[] = [
     { key: 'commande', label: 'Commande', visible: true },
@@ -34,16 +34,22 @@ export class AllOrdersComponent implements OnInit{
 
   ngOnInit(): void {
     this.getAllOrders();
-    this.applyColumnVisibility(); // init affichage colonnes
+    this.applyColumnVisibility();
   }
 
   getAllOrders(): void {
+    this.loading = true;
     this.adminService.getAllOrders().subscribe({
       next: data => {
+        this.loading = false;
         this.myOrders = data || [];
         this.dataSource = new MatTableDataSource(this.myOrders);
         this.dataSource.sort = this.sort;
         this.dataSource.paginator = this.paginator;
+      },
+      error: (err: any) => {
+        this.error = 'Impossible de charger vos commandes.';
+        this.loading = false;
       }
     });
   }
@@ -57,7 +63,7 @@ export class AllOrdersComponent implements OnInit{
     const selected = this.columnOptions
       .filter(c => c.visible)
       .map(c => c.key) as ColumnKey[];
-    // sécurité : au moins 1 colonne
+
     this.displayedColumns = selected.length ? selected : ['commande'];
   }
 }
