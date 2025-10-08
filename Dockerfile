@@ -25,34 +25,42 @@
 #EXPOSE 8080
 #CMD ["nginx", "-g", "daemon off;"]
 
-# Étape 1 : build Angular
-FROM node:20 AS build
+# Étape 1 : Build Angular
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Copier les fichiers package.json et installer les dépendances
+# Copier les fichiers de configuration et installer les dépendances
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+RUN npm install
+
+# Copier le reste du projet
 COPY . .
 
-# ARG pour choisir le type de build
-ARG FRONTEND_ENV=default
-ENV FRONTEND_ENV=${FRONTEND_ENV}
+# Définir la variable BUILD_MODE avec une valeur par défaut
+ARG BUILD_MODE=local
+ENV BUILD_MODE=${BUILD_MODE}
 
-# Build Angular
-RUN if [ "$FRONTEND_ENV" = "cloud" ]; then \
-      echo "Building Angular for cloud"; \
+# Exécuter la commande de build selon le mode
+RUN if [ "$BUILD_MODE" = "cloud" ]; then \
+      echo "📦 Build mode CLOUD"; \
       npm run build:cloud; \
     else \
-      echo "Building Angular default"; \
+      echo "🏡 Build mode LOCAL"; \
       npm run build; \
     fi
 
-# Étape 2 : Nginx
-FROM nginx:stable-alpine
-COPY --from=build /app/dist/frontend-angular /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Étape 2 : Serveur web Nginx pour servir les fichiers statiques
+FROM nginx:alpine
 
-EXPOSE 8080
+# Copier les fichiers buildés d'Angular vers Nginx
+COPY --from=build /app/dist/frontend-angular /usr/share/nginx/html
+
+# Exposer le port 80
+EXPOSE 80
+
+# Démarrer Nginx
 CMD ["nginx", "-g", "daemon off;"]
+
+
 
