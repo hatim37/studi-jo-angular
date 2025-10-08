@@ -80,6 +80,7 @@ jobs:
       IMAGE_NAME: angular-frontend
       SERVICE_NAME: angular-frontend
       REGION: europe-west1
+      FRONTEND_ENV: cloud  # <-- changer en "default" pour build local
 
     steps:
       # 1️⃣ Récupérer le code
@@ -96,9 +97,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Build Angular avec la configuration cloud
-      - name: Build Angular
-        run: npm run build:cloud
+      # 4️⃣ Build & Push Docker image avec argument
+      - name: Build & Push Docker image
+        run: |
+          docker build \
+            --build-arg FRONTEND_ENV=${{ env.FRONTEND_ENV }} \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
       # 5️⃣ Installer gcloud
       - name: Setup gcloud
@@ -108,17 +113,7 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      # 6️⃣ Auth Docker pour GCR
-      - name: Auth Docker
-        run: gcloud auth configure-docker gcr.io
-
-      # 7️⃣ Build & Push Docker image
-      - name: Build & Push Docker image
-        run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-      # 8️⃣ Déployer sur Cloud Run
+      # 6️⃣ Déployer sur Cloud Run
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
@@ -130,6 +125,6 @@ jobs:
             --port 80 \
             --timeout 300
 
-      # 9️⃣ Afficher l’URL du service
+      # 7️⃣ Afficher l’URL du service
       - name: Show Cloud Run URL
         run: gcloud run services describe ${{ env.SERVICE_NAME }} --region ${{ env.REGION }} --format='value(status.url)'

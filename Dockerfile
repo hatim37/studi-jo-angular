@@ -29,12 +29,24 @@
 FROM node:20 AS build
 
 WORKDIR /app
+
+# Copier les fichiers package.json et installer les dépendances
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 COPY . .
 
-# Build avec la configuration cloud
-RUN npm run build:cloud
+# ARG pour choisir le type de build
+ARG FRONTEND_ENV=default
+ENV FRONTEND_ENV=${FRONTEND_ENV}
+
+# Build Angular
+RUN if [ "$FRONTEND_ENV" = "cloud" ]; then \
+      echo "Building Angular for cloud"; \
+      npm run build:cloud; \
+    else \
+      echo "Building Angular default"; \
+      npm run build; \
+    fi
 
 # Étape 2 : Nginx
 FROM nginx:stable-alpine
@@ -43,3 +55,4 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
+
