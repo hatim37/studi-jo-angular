@@ -97,22 +97,37 @@ RUN if [ "$BUILD_ENV" = "local" ]; then \
 # Étape 2 : Serveur Nginx
 FROM nginx:stable-alpine
 
-# Copier les fichiers compilés Angular dans nginx
-COPY --from=build /app/dist/frontend-angular /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
 
-# Copier script set-env.js pour injecter les variables au runtime (prod)
-COPY set-env.js /usr/share/nginx/html/assets/set-env.js
+# Copier les fichiers compilés Angular
+COPY --from=build /app/dist/frontend-angular .
 
-# Injecter set-env.js dans index.html avant </head>
-RUN sed -i 's|</head>|<script src="assets/set-env.js"></script></head>|' /usr/share/nginx/html/index.html
+# Générer set-env.js à partir des variables Docker au runtime
+ARG NG_APP_BACKEND_PRODUCTS
+ARG NG_APP_BACKEND_USER
+ARG NG_APP_BACKEND_VALIDATION
+ARG NG_APP_BACKEND_LOGIN
+ARG NG_APP_BACKEND_CART
+ARG NG_APP_BACKEND_ORDERS
+
+RUN echo "window.NG_APP_BACKEND_PRODUCTS='${NG_APP_BACKEND_PRODUCTS}';" > assets/set-env.js \
+ && echo "window.NG_APP_BACKEND_USER='${NG_APP_BACKEND_USER}';" >> assets/set-env.js \
+ && echo "window.NG_APP_BACKEND_VALIDATION='${NG_APP_BACKEND_VALIDATION}';" >> assets/set-env.js \
+ && echo "window.NG_APP_BACKEND_LOGIN='${NG_APP_BACKEND_LOGIN}';" >> assets/set-env.js \
+ && echo "window.NG_APP_BACKEND_CART='${NG_APP_BACKEND_CART}';" >> assets/set-env.js \
+ && echo "window.NG_APP_BACKEND_ORDERS='${NG_APP_BACKEND_ORDERS}';" >> assets/set-env.js
 
 # Copier la configuration nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Injecter set-env.js dans index.html
+RUN sed -i 's|</head>|<script src="assets/set-env.js"></script></head>|' index.html
 
 # Exposer le port
 EXPOSE 8080
 
 # Démarrer nginx
 CMD ["nginx", "-g", "daemon off;"]
+
 
 
