@@ -26,48 +26,76 @@
 #CMD ["nginx", "-g", "daemon off;"]
 
 
+## Étape 1 : Build Angular
+#FROM node:20 AS build
+#
+## Définir l'argument de build (local ou cloud)
+#ARG BUILD_ENV=cloud
+#
+#WORKDIR /app
+#
+## Installer les dépendances
+#COPY package*.json ./
+#RUN npm install --legacy-peer-deps
+#
+## Copier le code source
+#COPY . .
+#
+## Build en fonction de l'environnement
+## - si local => npm run build (environment.ts)
+## - si cloud => npm run build:cloud (environment.cloud.ts)
+#RUN if [ "$BUILD_ENV" = "local" ]; then \
+#      echo "📦 Build en mode LOCAL..."; \
+#      npm run build; \
+#    else \
+#      echo "☁️ Build en mode CLOUD..."; \
+#      npm run build:cloud; \
+#    fi
+#
+## Étape 2 : Serveur Nginx
+#FROM nginx:stable-alpine
+#
+## Copier les fichiers compilés Angular dans nginx
+#COPY --from=build /app/dist/frontend-angular /usr/share/nginx/html
+#
+## Copier la configuration nginx
+#COPY nginx.conf /etc/nginx/conf.d/default.conf
+#
+## Exposer le port 8080
+#EXPOSE 8080
+#
+## Démarrer nginx
+#CMD ["nginx", "-g", "daemon off;"]
+
+
+
+
 # Étape 1 : Build Angular
 FROM node:20 AS build
 
-# Définir l'argument de build (local ou cloud)
-ARG BUILD_ENV=cloud
-
 WORKDIR /app
-
-# Installer les dépendances
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
-
-# Copier le code source
 COPY . .
 
-# Build en fonction de l'environnement
-# - si local => npm run build (environment.ts)
-# - si cloud => npm run build:cloud (environment.cloud.ts)
-RUN if [ "$BUILD_ENV" = "local" ]; then \
-      echo "📦 Build en mode LOCAL..."; \
-      npm run build; \
-    else \
-      echo "☁️ Build en mode CLOUD..."; \
-      npm run build:cloud; \
-    fi
+# Build Angular en mode cloud/runtime
+RUN npm run build --configuration cloud
 
-# Étape 2 : Serveur Nginx
+# Étape 2 : Nginx
 FROM nginx:stable-alpine
 
-# Copier les fichiers compilés Angular dans nginx
+# Copier build Angular
 COPY --from=build /app/dist/frontend-angular /usr/share/nginx/html
 
-# Copier la configuration nginx
+# Copier script set-env.js
+COPY set-env.js /usr/share/nginx/html/assets/set-env.js
+
+# Modifier index.html pour inclure le script set-env.js
+RUN sed -i 's|</head>|<script src="assets/set-env.js"></script></head>|' /usr/share/nginx/html/index.html
+
+# Copier configuration nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Exposer le port 8080
 EXPOSE 8080
-
-# Démarrer nginx
 CMD ["nginx", "-g", "daemon off;"]
-
-
-
-
 
