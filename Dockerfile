@@ -66,36 +66,53 @@
 #
 ## Démarrer nginx
 #CMD ["nginx", "-g", "daemon off;"]
-
+#
 
 
 
 # Étape 1 : Build Angular
 FROM node:20 AS build
 
+# Définir l'argument de build (local ou cloud)
+ARG BUILD_ENV=cloud
+
 WORKDIR /app
+
+# Installer les dépendances
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
+
+# Copier le code source
 COPY . .
 
-# Build Angular en mode cloud/runtime
-RUN npm run build --configuration cloud
+# Build Angular en fonction de l'environnement
+RUN if [ "$BUILD_ENV" = "local" ]; then \
+      echo "📦 Build en mode LOCAL (environment.ts)..."; \
+      npm run build; \
+    else \
+      echo "☁️ Build en mode CLOUD (environment.runtime.ts)..."; \
+      npm run build:cloud; \
+    fi
 
-# Étape 2 : Nginx
+# Étape 2 : Serveur Nginx
 FROM nginx:stable-alpine
 
-# Copier build Angular
+# Copier les fichiers compilés Angular dans nginx
 COPY --from=build /app/dist/frontend-angular /usr/share/nginx/html
 
-# Copier script set-env.js
+# Copier script set-env.js pour injecter les variables au runtime (prod)
 COPY set-env.js /usr/share/nginx/html/assets/set-env.js
 
-# Modifier index.html pour inclure le script set-env.js
+# Injecter set-env.js dans index.html avant </head>
 RUN sed -i 's|</head>|<script src="assets/set-env.js"></script></head>|' /usr/share/nginx/html/index.html
 
-# Copier configuration nginx
+# Copier la configuration nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Exposer le port
 EXPOSE 8080
+
+# Démarrer nginx
 CMD ["nginx", "-g", "daemon off;"]
+
 
