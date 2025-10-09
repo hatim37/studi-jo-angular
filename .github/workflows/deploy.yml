@@ -64,55 +64,67 @@
 #      - name: Afficher l’URL du service
 #        run: gcloud run services describe $SERVICE_NAME --region $REGION --format='value(status.url)'
 
-name: Deploy Angular Front to Cloud Run
+name: Deploy Angular to Cloud Run
 
 on:
   push:
-    branches:
-      - main
-
-env:
-  SERVICE_NAME: frontend-angular
-  REGION: europe-west1
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  BUILD_MODE: cloud   # 👈 facultatif (par défaut cloud dans le Dockerfile)
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    environment: prod
+
+    env:
+      IMAGE_NAME: angular-frontend
+      SERVICE_NAME: angular-frontend
+      REGION: europe-west1
+      FRONTEND_ENV: cloud  # <-- changer en "default" pour build local
 
     steps:
+      # 1️⃣ Récupérer le code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
+      # 2️⃣ Installer Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          node-version: '20'
 
-      - name: Set up gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.PROJECT_ID }}
+      # 3️⃣ Installer dépendances
+      - name: Install dependencies
+        run: npm install
 
-      - name: Build Docker image
+      # 4️⃣ Build & Push Docker image avec argument
+      - name: Build & Push Docker image
         run: |
           docker build \
-            --build-arg BUILD_MODE=${{ env.BUILD_MODE }} \
-            -t gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} .
+            --build-arg FRONTEND_ENV=${{ env.FRONTEND_ENV }} \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: Push Docker image to GCR
-        run: |
-          gcloud auth configure-docker gcr.io --quiet
-          docker push gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+      # 5️⃣ Installer gcloud
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
 
+      # 6️⃣ Déployer sur Cloud Run
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }} \
-            --region ${{ env.REGION }} \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
             --platform managed \
+            --region ${{ env.REGION }} \
             --allow-unauthenticated \
-            --set-env-vars BUILD_MODE=${{ env.BUILD_MODE }}
+            --service-account ${{ secrets.SERVICE_ACCOUNT }} \
+            --port 80 \
+            --timeout 300
 
-
+      # 7️⃣ Afficher l’URL du service
+      - name: Show Cloud Run URL
+        run: gcloud run services describe ${{ env.SERVICE_NAME }} --region ${{ env.REGION }} --format='value(status.url)'
