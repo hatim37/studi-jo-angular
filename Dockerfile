@@ -66,68 +66,36 @@
 #
 ## Démarrer nginx
 #CMD ["nginx", "-g", "daemon off;"]
-#
+
 
 
 
 # Étape 1 : Build Angular
 FROM node:20 AS build
 
-# Définir l'argument de build (local ou cloud)
-ARG BUILD_ENV=cloud
-
 WORKDIR /app
-
-# Installer les dépendances
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
-
-# Copier le code source
 COPY . .
 
-# Build Angular en fonction de l'environnement
-RUN if [ "$BUILD_ENV" = "local" ]; then \
-      echo "📦 Build en mode LOCAL (environment.ts)..."; \
-      npm run build; \
-    else \
-      echo "☁️ Build en mode CLOUD (environment.runtime.ts)..."; \
-      npm run build:cloud; \
-    fi
+# Build Angular en mode cloud/runtime
+RUN npm run build --configuration cloud
 
-# Étape 2 : Serveur Nginx
+# Étape 2 : Nginx
 FROM nginx:stable-alpine
 
-WORKDIR /usr/share/nginx/html
+# Copier build Angular
+COPY --from=build /app/dist/frontend-angular /usr/share/nginx/html
 
-# Copier les fichiers compilés Angular
-COPY --from=build /app/dist/frontend-angular .
+# Copier script set-env.js
+COPY set-env.js /usr/share/nginx/html/assets/set-env.js
 
-# Générer set-env.js à partir des variables Docker au runtime
-ARG NG_APP_BACKEND_PRODUCTS
-ARG NG_APP_BACKEND_USER
-ARG NG_APP_BACKEND_VALIDATION
-ARG NG_APP_BACKEND_LOGIN
-ARG NG_APP_BACKEND_CART
-ARG NG_APP_BACKEND_ORDERS
+# Modifier index.html pour inclure le script set-env.js
+RUN sed -i 's|</head>|<script src="assets/set-env.js"></script></head>|' /usr/share/nginx/html/index.html
 
-RUN echo "window.NG_APP_BACKEND_PRODUCTS='${NG_APP_BACKEND_PRODUCTS}';" > assets/set-env.js \
- && echo "window.NG_APP_BACKEND_USER='${NG_APP_BACKEND_USER}';" >> assets/set-env.js \
- && echo "window.NG_APP_BACKEND_VALIDATION='${NG_APP_BACKEND_VALIDATION}';" >> assets/set-env.js \
- && echo "window.NG_APP_BACKEND_LOGIN='${NG_APP_BACKEND_LOGIN}';" >> assets/set-env.js \
- && echo "window.NG_APP_BACKEND_CART='${NG_APP_BACKEND_CART}';" >> assets/set-env.js \
- && echo "window.NG_APP_BACKEND_ORDERS='${NG_APP_BACKEND_ORDERS}';" >> assets/set-env.js
-
-# Copier la configuration nginx
+# Copier configuration nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Injecter set-env.js dans index.html
-RUN sed -i 's|</head>|<script src="assets/set-env.js"></script></head>|' index.html
-
-# Exposer le port
 EXPOSE 8080
-
-# Démarrer nginx
 CMD ["nginx", "-g", "daemon off;"]
-
-
 
