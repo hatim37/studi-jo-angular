@@ -63,6 +63,7 @@
 #
 #      - name: Afficher l’URL du service
 #        run: gcloud run services describe $SERVICE_NAME --region $REGION --format='value(status.url)'
+#
 
 name: Deploy Angular to Cloud Run
 
@@ -76,60 +77,40 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
 
-    env:
-      IMAGE_NAME: angular-frontend
-      SERVICE_NAME: angular-frontend
-      REGION: europe-west1
-
     steps:
-      # 1️⃣ Récupérer le code
-      - name: Checkout code
+      - name: 📥 Récupérer le code
         uses: actions/checkout@v4
 
-      # 2️⃣ Installer Node.js
-      - name: Setup Node.js
+      - name: 🪄 Installer Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      # 3️⃣ Installer dépendances
-      - name: Install dependencies
-        run: npm install
-
-      # 4️⃣ Build Angular avec la configuration cloud
-      - name: Build Angular
-        run: npm run build:cloud
-
-      # 5️⃣ Installer gcloud
-      - name: Setup gcloud
+      - name: 🧰 Installer gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          project_id: ${{ env.PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      # 6️⃣ Auth Docker pour GCR
-      - name: Auth Docker
+      - name: 🔐 Authentifier Docker pour gcr.io
         run: gcloud auth configure-docker gcr.io
 
-      # 7️⃣ Build & Push Docker image
-      - name: Build & Push Docker image
+      - name: 🏗️ Build & Push Docker image
         run: |
-          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
-          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker build -t $IMAGE_REPO:$IMAGE_TAG --build-arg BUILD_ENV=cloud .
+          docker push $IMAGE_REPO:$IMAGE_TAG
 
-      # 8️⃣ Déployer sur Cloud Run
-      - name: Deploy to Cloud Run
+      - name: ☁️ Déployer sur Cloud Run
         run: |
-          gcloud run deploy ${{ env.SERVICE_NAME }} \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          gcloud run deploy $SERVICE_NAME \
+            --image $IMAGE_REPO:$IMAGE_TAG \
             --platform managed \
-            --region ${{ env.REGION }} \
+            --region $REGION \
             --allow-unauthenticated \
-            --service-account ${{ secrets.SERVICE_ACCOUNT }} \
+            --service-account $SERVICE_ACCOUNT \
             --port 80 \
-            --timeout 300
+            --timeout=300
 
-      # 9️⃣ Afficher l’URL du service
-      - name: Show Cloud Run URL
-        run: gcloud run services describe ${{ env.SERVICE_NAME }} --region ${{ env.REGION }} --format='value(status.url)'
+      - name: 🌐 Afficher l’URL du service
+        run: gcloud run services describe $SERVICE_NAME --region $REGION --format='value(status.url)'
