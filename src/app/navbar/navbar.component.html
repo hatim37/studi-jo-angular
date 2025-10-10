@@ -28,6 +28,7 @@
 <mat-drawer-container>
   <mat-drawer #drawer position="start" [mode]="drawerMode" [opened]="drawerOpened">
     <mat-nav-list>
+
       <mat-list-item>
         <button mat-button routerLink=""><mat-icon>dashboard</mat-icon>Accueil</button>
       </mat-list-item>
@@ -35,7 +36,7 @@
         <button mat-button [routerLink]="authService.roles.includes('ADMIN') ? '/admin/dashboard' : '/products'"><mat-icon>person</mat-icon >Billets</button>
       </mat-list-item>
       <mat-list-item *ngIf="authService.authenticated">
-        <button mat-button routerLink="/customers/commandes"><mat-icon>supervisor_account</mat-icon>Mon compte</button>
+        <button mat-button routerLink="/customers/account"><mat-icon>supervisor_account</mat-icon>Mon compte</button>
       </mat-list-item>
       <mat-list-item *ngIf="authService.authenticated">
         <button mat-button routerLink="/customers/commandes"><mat-icon>list</mat-icon>Mes commandes</button>
