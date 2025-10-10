@@ -35,6 +35,9 @@
         <button mat-button [routerLink]="authService.roles.includes('ADMIN') ? '/admin/dashboard' : '/products'"><mat-icon>person</mat-icon >Billets</button>
       </mat-list-item>
       <mat-list-item *ngIf="authService.authenticated">
+        <button mat-button routerLink="/customers/commandes"><mat-icon>supervisor_account</mat-icon>Mon compte</button>
+      </mat-list-item>
+      <mat-list-item *ngIf="authService.authenticated">
         <button mat-button routerLink="/customers/commandes"><mat-icon>list</mat-icon>Mes commandes</button>
       </mat-list-item>
       <mat-list-item *ngIf="authService.roles.includes('ADMIN') || authService.roles.includes('AGENT')" >
