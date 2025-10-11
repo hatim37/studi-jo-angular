@@ -34,6 +34,7 @@ export class CaddyComponent implements OnInit {
 
   ngOnInit() {
     this.getCaddies();
+
   }
 
   public getCaddies() {
@@ -41,8 +42,8 @@ export class CaddyComponent implements OnInit {
       this.cartService.getSizeCaddy();
       this.getCartBackend();
     } else {
-      this.caddy=this.caddyService.getCurrentCaddy().items;
-      this.caddy.forEach((item: any) => {
+      this.caddy=this.caddyService.getCurrentCaddy();
+      this.caddy.items.forEach((item: any) => {
         this.entries.push(item);
         this.entries.forEach((entry: any) => {})
       })
@@ -80,6 +81,7 @@ export class CaddyComponent implements OnInit {
               item.processedImg = 'data:image/jpeg;base64,' + item.returnedImg;
               this.entries.push(item);
             })
+            this.cartService.getSizeCaddy();
             this.snackBar.open('Quantité modifiée !', 'close', {duration: 3000});
             //on arrete les animations spinner
             this.loading = false;

@@ -9,8 +9,8 @@
        [matBadgeHidden]="(cartService.sizeCaddyBackend || 0) === 0"  matBadgeOverlap="small" class="clickable me-3" >
     <i class="bi bi-bag"></i>
   </div>
-  <div *ngIf="!authService.authenticated" routerLink="/panier"  [matBadge]="caddiesService.getCurrentCaddy().items.size || 0"
-       [matBadgeHidden]="(caddiesService.getCurrentCaddy().items.size || 0) === 0" matBadgeOverlap="small" class=" clickable me-3">
+  <div *ngIf="!authService.authenticated" routerLink="/panier"  [matBadge]="caddiesService.getTotalCaddy() || 0"
+       [matBadgeHidden]="(caddiesService.getTotalCaddy() || 0) === 0" matBadgeOverlap="small" class=" clickable me-3">
     <i class="bi bi-bag"></i>
   </div>
 

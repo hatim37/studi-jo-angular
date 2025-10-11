@@ -58,7 +58,7 @@ export class CartService {
     return this.http.get(`${environment.backend_cart}/cart/${userId}`);
   }
 
-  getSizeCaddy() {
+  /*getSizeCaddy() {
     let value:any;
     this.getCartByUserId().subscribe({
       next: data => {
@@ -70,7 +70,30 @@ export class CartService {
         }
       }
     })
+  }*/
+
+  getSizeCaddy(): void {
+    this.getCartByUserId().subscribe({
+      next: (value: any) => {
+        if (!value || !value.cartItems) {
+          this.sizeCaddyBackend = 0;
+          return;
+        }
+        const totalQuantity = value.cartItems.reduce(
+          (acc: number, item: any) => acc + (item.quantity || 0),
+          0
+        );
+        if (totalQuantity !== this.sizeCaddyBackend) {
+          this.sizeCaddyBackend = totalQuantity;
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération du panier :', err);
+        this.sizeCaddyBackend = 0;
+      }
+    });
   }
+
 
   deleteCartItems(cartId: number) {
     return this.http.delete(`${environment.backend_cart}/delete-cart/${cartId}`);

@@ -11,7 +11,7 @@ import {ItemProduct} from '../model/item-product.model';
 export class CaddiesService {
 
   private readonly storageKey = 'panier';
-  private caddy: Caddy;
+  public caddy: Caddy;
 
   constructor(private snackBar: MatSnackBar) {
     this.caddy = this.loadCaddy() || new Caddy('Panier');
@@ -57,6 +57,16 @@ export class CaddiesService {
 
   public getCurrentCaddy(): Caddy {
     return this.caddy;
+  }
+
+
+  public getTotalCaddy() {
+   let totalQuantity = 0;
+    this.caddy.items.forEach((item: any) => {
+      totalQuantity += item.quantity || 0;
+    });
+    return totalQuantity;
+
   }
 
 

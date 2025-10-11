@@ -5,12 +5,15 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {UUIDTypes, v4 as uuidv4} from 'uuid';
 import {jwtDecode} from 'jwt-decode';
 import {Router} from '@angular/router';
+import {Subject, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  loginSuccess = new Subject<void>();
+  logoutSuccess = new Subject<void>();
   options:any = {headers: new HttpHeaders().set('Content-Type', 'application/json')};
   public userId: any;
   public username: any;
@@ -38,8 +41,13 @@ export class AuthService {
   login(email: any, password: any) {
     let deviceId = this.getOrCreateDeviceId(email);
     let body = {username: email, password: password, devices: deviceId};
-    return this.http.post(`${environment.backend_login}/signin`, body, this.options);
+    return this.http.post(`${environment.backend_login}/signin`, body, this.options).pipe(
+      tap(() => {
+        this.loginSuccess.next(); // notifie le login réussi
+      })
+    );
   }
+
 
   logout() {
     this.authenticated = false;
@@ -48,6 +56,7 @@ export class AuthService {
     this.roles = [];
     window.localStorage.removeItem('access-token');
     this.router.navigate(['/home']);
+    this.logoutSuccess.next();
   }
 
   loadProfile(value: any) {

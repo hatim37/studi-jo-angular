@@ -15,14 +15,16 @@
         <mat-form-field appearance="outline">
           <mat-label>Numéro</mat-label>
           <input matInput formControlName="number" placeholder="**** **** **** ****" required mask="0000 0000 0000 0000">
-          <mat-error *ngIf="paymentForm.get('number')?.invalid && paymentForm.get('number')?.touched">Numéro invalid</mat-error>
+          <mat-error *ngIf="paymentForm.get('number')?.invalid && paymentForm.get('number')?.touched">
+            Numéro invalide
+          </mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Date expiration</mat-label>
           <input matInput type="text" formControlName="date" placeholder="**/**" required mask="00/00">
           <mat-error *ngIf="paymentForm.get('date')?.invalid && paymentForm.get('date')?.touched">
-            Mot de passe invalid
+            Date invalide
           </mat-error>
         </mat-form-field>
 
@@ -30,12 +32,12 @@
           <mat-label>Code 3 chiffres</mat-label>
           <input matInput type="text" formControlName="verif" placeholder="***" required mask="000">
           <mat-error *ngIf="paymentForm.get('verif')?.invalid && paymentForm.get('verif')?.touched">
-            Format invalid
+            Format invalide
           </mat-error>
         </mat-form-field>
 
         <div class="button-row">
-          <button mat-raised-button color="primary" type="submit"  [disabled]="paymentForm.invalid" class="order-button" (click)="onSubmit()">
+          <button mat-raised-button color="primary" type="submit" [disabled]="paymentForm.invalid" class="order-button" (click)="onSubmit()">
             Valider
           </button>
           <button mat-stroked-button color="warn" class="close-button" (click)="closeForm()">
@@ -45,11 +47,4 @@
       </form>
     </mat-card-content>
   </mat-card>
-
 </mat-dialog-content>
-
-
-
-
-
-
